@@ -14,7 +14,7 @@ export let appContext = createContext(null)
 function App() {
 
   let devMode = useRef(false);
-  let level = useRef(1);
+  let level = useRef(2);
   let mapHeight = useRef(19);
   let mapWidth = useRef(16);
   let playerPosition = useRef(5);
@@ -56,8 +56,8 @@ function App() {
   let GameLoadingScreenRef = useRef(null);
   let playerLifeUpgradeCost = useRef({value:20,level:1});
   let playerWeaponUpgradeCost = useRef({value:20,level:1});
-  let playerStats = useRef({bulletModel:'default',score:0,life:5,maxLife:5,moveSpeed:0.1,shootInterval:20,shootPower:1,keyCollected:0,mobKilled:0,importantMobKilled:0,coinCollected:0,showWeapon:false});
-  let levelInfo = useRef({mapTexture:'ntxt4.jpg',_KeyNumber:0,_MobToKillNumber:0,timerSecond:0,timerMinute:0,fogColor:'#000000',fogNear:3,fogFar:20,finalLevel:false});
+  let playerStats = useRef({bulletModel:'default',score:0,life:5,maxLife:5,moveSpeed:0.1,shootInterval:20,shootPower:1,batteryPlaced:0,keyCollected:0,mobKilled:0,importantMobKilled:0,coinCollected:0,showWeapon:false});
+  let levelInfo = useRef({mapTexture:'alientxt.jpg',battery:0,_KeyNumber:0,_MobToKillNumber:0,timerSecond:0,timerMinute:0,fogColor:'#000000',fogNear:3,fogFar:20,finalLevel:false});
   let saveDataOrder = useRef([level.current,playerStats.current.coinCollected,playerStats.current.score,playerStats.current.life,playerStats.current.maxLife,
     playerStats.current.shootInterval,playerStats.current.shootPower,playerLifeUpgradeCost.current.value,playerLifeUpgradeCost.current.level,
     playerWeaponUpgradeCost.current.value,playerWeaponUpgradeCost.current.level])
@@ -81,13 +81,13 @@ function App() {
     
   let deleteGameSave = ()=>
     {
-      deleteCookie('DW_SAVE')
+      deleteCookie('TPS_SAVE')
       level.current = 1;
       playerStats.current = {bulletModel:'default',score:0,life:5,maxLife:5,moveSpeed:0.1,shootInterval:50,shootPower:1,keyCollected:0,mobKilled:0,importantMobKilled:0,coinCollected:0,showWeapon:false}
     }
   let findGameSave = ()=>
     {
-      let save = getCookieFunc('DW_SAVE');
+      let save = getCookieFunc('TPS_SAVE');
       if(save == 'empty')
       {
 

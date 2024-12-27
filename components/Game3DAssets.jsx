@@ -5,7 +5,7 @@ Command: npx gltfjsx@6.4.1 ./public/model.glb
 // FILE CONTAINING ALL THE 3D ASSET ON THE GAME
 import * as THREE from 'three'
 import React, { useContext, useEffect, useMemo, useRef } from 'react'
-import { Point, Points, useAnimations, useGLTF, useTexture } from '@react-three/drei'
+import { Point, Points, Text, useAnimations, useGLTF, useTexture } from '@react-three/drei'
 import { useFrame, useGraph } from '@react-three/fiber';
 import { appContext } from '../src/App';
 import { mobContext } from './mob_2';
@@ -13,6 +13,12 @@ import { gameAppContext } from './GameApp';
 import { CustomCounter } from './utils';
 import vertex from './vertex.glsl'
 import frags from './frags.glsl'
+import screenvertex from './screenvertex.glsl'
+import screenfrags from './screenFrag.glsl'
+import portal2vertex from './shaders/portal2vertex.glsl'
+import portal2frags from './shaders/portal2frag.glsl'
+import doorvertex from './shaders/doorVertex.glsl'
+import doorfrags from './shaders/doorfrag.glsl'
 import { createContext } from 'react';
 
 export const MobModelContext = createContext();
@@ -39,11 +45,14 @@ export function PlayerModel(props)
   )
 }
 export function PlayerDirection(props) {
-  let _appContext = useContext(appContext)
+  let _appContext = useContext(appContext);
+  let _gameAppContext = useContext(gameAppContext)
   const { nodes, materials } = useGLTF('/model.glb');
- 
+  let _time = 0
   let modelRef = useRef(null)
-  let mat2 = new THREE.MeshBasicMaterial({color:'white',wireframe:true});
+  let texture = prepareTexture('game1texture.jpg');
+  let mat2 = new THREE.MeshBasicMaterial({map:texture});
+  let mat3 = new THREE.ShaderMaterial({vertexShader:screenvertex,fragmentShader:screenfrags})
   let directionFront = [0,0,0];
   let directionLeft = [0,Math.PI*0.5,0];
   let directionBack = [0,Math.PI,0];
@@ -67,22 +76,57 @@ export function PlayerDirection(props) {
   // let customCounter = new CustomCounter(2,0,turnPlayer,null)
 
   // useEffect(()=>{customCounter.start()},[])
+  useFrame(()=>
+    {
+      _time += 0.01
+      modelRef.current.position.y += Math.sin(_time*5)/100
+      // for(let i =0;i< modelRef.current.children.length;i++)
+      // {
+      //   if( modelRef.current.children[i].name =="player1Wheel_1" || modelRef.current.children[i].name =="player1Wheel_2" ||
+      //       modelRef.current.children[i].name =="player1Wheel_3" || modelRef.current.children[i].name =="player1Wheel_4"
+      //     )
+      //   {
+      //     if(_gameAppContext.playerMoveIsActive.current)
+      //     {
+      //       modelRef.current.children[i].rotation.x += 0.05
+      //     }
+         
+      //   }
+      // }
+     
+    })
   return (
     
-      <mesh ref={modelRef} geometry={nodes.playerDirection.geometry} material={mat2}  position={[0, 0.2,0]} />
+      // <mesh ref={modelRef} geometry={nodes.PlayerModel1.geometry} material={mat2}  position={[0, 0.2,0]} />
+      // <mesh  ref={modelRef}>
+      //     <boxGeometry args={[0.5,0.5,0.5]}/>
+      //     <meshBasicMaterial wireframe color={'red'} />
+      // </mesh>
+      // <mesh scale={1} ref={modelRef} name="player1" geometry={nodes.player1.geometry} material={mat2} position={[0, 1, 0]}>
+      //       <mesh name="player1Gun" geometry={nodes.player1Gun.geometry} material={mat2} position={[0.298, 0.853, 0.861]} />
+      //       <mesh name="player1Screen" geometry={nodes.player1Screen.geometry} material={mat2} />
+      //       <mesh name="player1Wheel_1" geometry={nodes.player1Wheel_1.geometry} material={mat2} position={[0.388, -0.672, 0.394]} />
+      //       <mesh name="player1Wheel_2" geometry={nodes.player1Wheel_2.geometry} material={mat2} position={[0.388, -0.672, -0.406]} />
+      //       <mesh name="player1Wheel_3" geometry={nodes.player1Wheel_3.geometry} material={mat2} position={[-0.379, -0.672, 0.394]} rotation={[Math.PI, 0, Math.PI]} />
+      //       <mesh name="player1Wheel_4" geometry={nodes.player1Wheel_4.geometry} material={mat2} position={[-0.379, -0.672, -0.406]} rotation={[Math.PI, 0, Math.PI]} />
+      // </mesh>
+      <mesh scale={0.9} ref={modelRef} name="playermodel2" geometry={nodes.playermodel2.geometry} material={new THREE.MeshMatcapMaterial({color:'gray'})} position={[0,1,0]}>
+          <mesh name="playerHat" geometry={nodes.playerHat.geometry} material={new THREE.MeshMatcapMaterial({color:'yellow'})} position={[0, 0.273, -0.273]} />
+          <mesh name="playermodel2Screen" geometry={nodes.playermodel2Screen.geometry} material={mat3} />
+      </mesh>
     
   )
 }
 export function GroundModel(props) {
   let _appContext = useContext(appContext)
   const { nodes, materials } = useGLTF('/model.glb');
-  let _texture = prepareTexture(_appContext.levelInfo.current.mapTexture);
+  let _texture = prepareTexture('alientxt.jpg');
  
-  let mat = new THREE.MeshBasicMaterial({map:_texture,wireframe:true});
+  let mat = new THREE.MeshBasicMaterial({map:_texture,wireframe:false});
   let mat2 = new THREE.MeshBasicMaterial({color:'red',wireframe:true});
   return (
     <group {...props} dispose={null}>
-      <mesh geometry={nodes.planeGround.geometry} material={mat2} position={[props.x, 0, props.z]} />
+      <mesh geometry={nodes.planeGround.geometry} material={mat} position={[props.x, 0, props.z]} />
     </group>
   )
 }
@@ -116,7 +160,7 @@ export function BulletModel(props) {
                     {_appContext.playerStats.current.bulletModel =='default'?
                       <mesh scale={1} 
                       rotation={[Math.PI*0.5,Math.PI*0.2,0]}  
-                      material={mat} geometry={nodes.nArrow.geometry} >
+                      material={mat} geometry={nodes.bulletmodel1.geometry} >
                             <meshBasicMaterial map={_texture} visible={props._visible} />
                       </mesh>
                       :
@@ -162,8 +206,10 @@ export function Decor_model(props) {
       <>
 
           {props.skin == 'wall' && <mesh geometry={nodes.nWall.geometry} material={mat3} position={[props.x,0,props.z]}/>}
-          {props.skin == 'tombstone' && <mesh geometry={nodes.ndecor1.geometry} material={mat4} position={[props.x,0,props.z]}/>}
-          {props.skin == 'lampadaire' && <mesh geometry={nodes.ndecor2.geometry} material={mat4} position={[props.x,0,props.z]}/>}
+          {props.skin == 'tombstone' && <mesh geometry={nodes.tree2.geometry} material={new THREE.MeshMatcapMaterial({color:'gray'})} position={[props.x,0,props.z]}/>}
+          {props.skin == 'lampadaire' && <mesh rotation={[0,Math.PI,0]}  geometry={nodes.clim.geometry} material={new THREE.MeshMatcapMaterial({color:'gray'})} position={[props.x,0,props.z]}>
+                                              <mesh geometry={nodes.climfan.geometry} position={[0.003, 0.796, 0.518]} material={new THREE.MeshMatcapMaterial({color:'black'})}/>
+                                        </mesh>}
       </>
     }
     </>      
@@ -198,6 +244,7 @@ export function WallModel(props)
 export function ItemType2Model(props) {
    //GERE LES ITEMS 3D SUR LA MAP Y COMPRIS LES ITEMS QUE LES MOBS
   let _appContext = useContext(appContext)
+  let _gameAppContext = useContext(gameAppContext);
   const { nodes, materials } = useGLTF('/model.glb');
   let textureSrc;
 
@@ -208,14 +255,17 @@ export function ItemType2Model(props) {
   let mat = new THREE.MeshBasicMaterial({map:_texture,visible:true});
   const healmat = new THREE.MeshMatcapMaterial({color:'green'});
   let mobInitialPos = {x:0,z:0};
+  let bombRollDirection = useRef('NONE')
   let mobShakeAnimationStart = false
   let mobShakeFromLeft = false
   let passedTime = 0;
+  const quaternionX = new THREE.Quaternion();
+  const quaternionZ = new THREE.Quaternion();
   useFrame((clock)=>
   {
     if(!_appContext.gamePause.current)
     {
-      if(props.objectName == 'heal_item' || props.objectName == 'key_item' || props.objectName == 'box_item' )
+      if(props.objectName == 'heal_item' || props.objectName == 'coin_item' || props.objectName == 'key_item' || props.objectName == 'box_item' )
       {
         itemRef.current.rotation.y += (1/30);
       }
@@ -223,6 +273,38 @@ export function ItemType2Model(props) {
       {
         passedTime += 1/40;
         itemRef.current.position.y += Math.sin(passedTime)/400;
+      }
+      else if(props.objectName == 'bomb_item')
+      {
+          if(_gameAppContext.objectCanMove.current.active)
+          {
+              if(bombRollDirection.current == 'FRONT')
+              {
+                quaternionX.setFromAxisAngle(new THREE.Vector3(1,0,0),0.05)
+                
+                itemRef.current.applyQuaternion(quaternionX)
+                // itemRef.current.rotation.x += 0.05;
+              }
+              else if(bombRollDirection.current == 'BACK')
+              {
+                quaternionX.setFromAxisAngle(new THREE.Vector3(1,0,0),-0.05)
+                itemRef.current.applyQuaternion(quaternionX)
+                // itemRef.current.rotation.x -= 0.05;
+              }
+              else if(bombRollDirection.current == 'LEFT')
+              {
+                quaternionZ.setFromAxisAngle(new THREE.Vector3(0,0,1),-0.05)
+                itemRef.current.applyQuaternion(quaternionZ)
+                // itemRef.current.rotation.z -= 0.05;
+              }
+              else if(bombRollDirection.current == 'RIGHT')
+              {
+                quaternionZ.setFromAxisAngle(new THREE.Vector3(0,0,1),0.05)
+                itemRef.current.applyQuaternion(quaternionZ)
+                // itemRef.current.rotation.z += 0.05;
+              }
+          }
+        
       }
     }
     
@@ -263,6 +345,102 @@ export function ItemType2Model(props) {
             itemGroupRef.current.position.x = params.x
             itemGroupRef.current.position.z = params.z
           }
+          else if(args == 'START-BOMB-COUNTER')
+          {
+            if(!params.objectDesc.counterStart)
+            {
+              params.objectDesc.counterStart = true;
+              params.objectDesc.canMove = false;
+
+              let bombCounterCallBack = ()=>
+                {
+                 
+                  if(itemGroupRef.current.children[1].text == 1){explodeAnimation.start(); return true;}
+                  else
+                  {
+                    itemGroupRef.current.children[1].text --;
+                    
+                    return false;
+                  }
+                  
+                }
+              let bombExplosion = ()=>
+                {
+                  if(itemGroupRef.current.children[2].scale.x >= 3.5)
+                  {
+                    itemGroupRef.current.children[2].scale.set(0,0,0)
+                    itemGroupRef.current.children[2].visible = false;
+                    params.object = false;
+                    params.isOnScene = false;
+                    return true;
+                  }
+                  else
+                  {
+                      itemGroupRef.current.children[0].visible = false
+                      itemGroupRef.current.children[1].visible = false
+                      itemGroupRef.current.children[2].visible = true
+                      itemGroupRef.current.children[2].scale.set(
+                      itemGroupRef.current.children[2].scale.x +0.1,
+                      itemGroupRef.current.children[2].scale.y +0.1,
+                      itemGroupRef.current.children[2].scale.z +0.1
+                      ) 
+                    
+                    return false;
+                  }
+                }
+              let explodeAnimation = new CustomCounter(1,0,bombExplosion,null);
+              let bombCounter = new CustomCounter(60,0,bombCounterCallBack,null)
+              bombCounter.start();
+            }
+            else
+            {
+              console.log('deja commencé')
+            }
+            
+          }
+          else if(args == 'ROLL-BOMB')
+          {
+            bombRollDirection.current = params
+          }
+          else if(args == 'ROLL-STOP')
+          {
+            bombRollDirection.current = "NONE"
+          }
+          else if(args == 'MOVE-BOMB')
+          {
+            if(params.direction == 'LEFT')
+            {
+              let objPosX =  itemGroupRef.current.position.x ;
+              objPosX += params.speed
+              objPosX = Math.round(objPosX * 100) / 100;
+              itemGroupRef.current.position.x = objPosX
+              
+            }
+            else if(params.direction == 'RIGHT')
+            {
+              let objPosX =  itemGroupRef.current.position.x ;
+              objPosX -= params.speed
+              objPosX = Math.round(objPosX * 100) / 100;
+              itemGroupRef.current.position.x = objPosX
+              
+            }
+            else if(params.direction == 'FRONT')
+            {
+              let objPosZ =  itemGroupRef.current.position.z ;
+              objPosZ += params.speed
+              objPosZ = Math.round(objPosZ * 100) / 100;
+              itemGroupRef.current.position.z = objPosZ
+              
+            }
+            else if(params.direction == 'BACK')
+            {
+              let objPosZ =  itemGroupRef.current.position.z ;
+              objPosZ -= params.speed
+              objPosZ = Math.round(objPosZ * 100) / 100;
+              itemGroupRef.current.position.z = objPosZ
+              
+            }
+          }
           else if(args=='SHAKE-ITEM')
           {
               if(!mobShakeAnimationStart)
@@ -286,12 +464,57 @@ export function ItemType2Model(props) {
             visible={props._visible}
             position={[props.x,0,props.z]}
       >
+          {props.skin == "bomb_item_1" && <>
+                            
+                                  <mesh ref={itemRef} name="bombmodel1" geometry={nodes.bombmodel1.geometry} material={new THREE.MeshMatcapMaterial({color:'gray'})} position={[0,0.5,0]}>
+                                      <mesh name="bombmodel1belt" geometry={nodes.bombmodel1belt.geometry} material={new THREE.MeshMatcapMaterial({color:'red'})} />
+                                      <mesh name="bombmodel1head" geometry={nodes.bombmodel1head.geometry} material={new THREE.MeshMatcapMaterial({color:'red'})} />
+                                  </mesh>
+                                  <Text
+                                      
+                                      characters='1234567890'
+                                      fontSize={0.8} fontWeight={700}
+                                      rotation={[0,-(Math.PI),0]}
+                                      position={[0,1.5,0]} color={'white'} anchorX={"center"} anchorY={"middle"}
+                                  >
+                                         {props.timer}
+                                  </Text>
+                                  <mesh visible={false} scale={1} position={[0,0.5,0]}>
+                                        <sphereGeometry args={[0.9,20,20]} />
+                                        <meshBasicMaterial color={'red'} />
+                                  </mesh>
+                            
+            </>}
+          {props.skin == "battery_item_1" && <>
+                          
+            <mesh geometry={nodes.battery.geometry} material={new THREE.MeshMatcapMaterial({color:'gray'})} >
+              <mesh geometry={nodes.batteryHead.geometry} material={new THREE.MeshMatcapMaterial({color:'white'})} position={[0, 1.5, 0]} />
+            </mesh>
+                          
+                      
+          </>}
           {props.skin == "coin_item_1" && <>
                                     <group ref={itemRef} >
                                           {props.customModel}
                                     </group>
                                     <CustomParticle _skin={'star_07.png'} _size={0.5} _color={'green'} _speed={1} _number={30} x={0} z={0} />
                                 </>}
+          {props.skin == "coin_item_2" && <>
+              <group ref={itemRef} >
+                    {props.customModel == "none"?
+                        <>
+                            <mesh  scale={0.5} geometry={nodes.coinmodel1.geometry} position={[0,0.5,0]}>
+                                <meshMatcapMaterial color={'gold'} />
+                            </mesh>
+                        </>
+                    :
+                        <>
+                          {props.customModel}
+                        </>
+                    }
+              </group>
+              <CustomParticle _skin={'star_07.png'} _size={0.5} _color={'green'} _speed={1} _number={30} x={0} z={0} />
+          </>}
           {props.skin == "heal_item_1" && <>
                                               <group ref={itemRef} >
                                                   {props.customModel!='none'?
@@ -314,7 +537,7 @@ export function ItemType2Model(props) {
                                               </>
                                               :
                                               <>
-                                                <mesh scale={0.5} rotation={[0,0,Math.PI*0.2]} geometry={nodes.key_1.geometry} material={mat} position={[0,0.8,0]} />
+                                                <mesh scale={1} rotation={[Math.PI*0.5,0,0]} geometry={nodes.key2.geometry} material={new THREE.MeshMatcapMaterial({color:'silver'})} position={[0,0.8,0]} />
                                               </>
                                             }
                                         </group>
@@ -557,53 +780,53 @@ export function ExitDoor_model(props)
 {
   const { nodes, materials } = useGLTF('/model.glb');
   let texturemat = prepareTexture('txtglobal1.jpg');
+  let exitDoorShaderRef = useRef(null);
 
-  let faceRef = useRef(null)
-  let mat_0 = new THREE.MeshBasicMaterial({map:texturemat});
+let mat = new THREE.ShaderMaterial({visible:false,side:THREE.DoubleSide,vertexShader:doorvertex,fragmentShader:doorfrags,uniforms:{utime:{value:0}},transparent:true})
+  // useFrame((clock)=>{
+  //   faceRef.current.material.uniforms.utime.value += 0.05;
 
-let mat = new THREE.ShaderMaterial( {
-  uniforms: THREE.UniformsUtils.merge( [
-      THREE.UniformsLib[ 'fog' ],{utime:{value:0.2},uColor:{value:new THREE.Vector3(1,0,0)}}] ),
-    vertexShader: vertex,
-    fragmentShader: frags,
-    fog: true,
-    transparent:true,
-    side:THREE.DoubleSide
-  } );
-  useFrame((clock)=>{
-    faceRef.current.material.uniforms.utime.value += 0.05;
-
-  })
+  // })
 
   useEffect(()=>
     { 
       if(props.isOpen)
       {
-        faceRef.current.material.uniforms.uColor.value.x = 0.0;
-        faceRef.current.material.uniforms.uColor.value.z = 1.0;
+        // faceRef.current.material.uniforms.uColor.value.x = 0.0;
+        // faceRef.current.material.uniforms.uColor.value.z = 1.0;
       }
       props.controller.exitDoorController.value[props.controller.index] = (args)=>
       {
           if(args == 'OPEN-DOOR')
           {
-            faceRef.current.material.uniforms.uColor.value.x = 0.0;
-            faceRef.current.material.uniforms.uColor.value.z = 1.0;
+            exitDoorShaderRef.current.material.visible = true;
+            // let openDoorFunc = ()=>
+            // {
+            //   if(exitDoorShaderRef.current.position.y>=2)
+            //   {
+            //     return true;
+            //   }
+            //   else
+            //   {
+            //     exitDoorShaderRef.current.position.y += 0.05;
+            //     return false;
+            //   }
+            // }
+            // // faceRef.current.material.uniforms.uColor.value.x = 0.0;
+            // // faceRef.current.material.uniforms.uColor.value.z = 1.0;
+            // let doorOpenAnimation = new CustomCounter(1,0,openDoorFunc,null)
+            // doorOpenAnimation.start();
           }
       } 
     },[])
+  useFrame(()=>
+    {
+      exitDoorShaderRef.current.material.uniforms.utime.value += 0.01;
+    })
   return(
     
-    // <mesh geometry={nodes.door_1.geometry} material={mat_0} position={[props.x,0,props.z]}>
-    //         <mesh ref={faceRef} geometry={nodes.door_1_face1.geometry} material={mat} position={[0, 1.018, -0.746]} rotation={[-Math.PI / 2, 0, 0]} scale={[0.746, 1, 0.892]} />
-    //         <mesh geometry={nodes.door_1_face2.geometry} material={mat} position={[0.752, 1.018, 0.005]} rotation={[0, 0, -Math.PI / 2]} scale={[0.862, 1, 0.75]} />
-    //         <mesh geometry={nodes.door_1_face3.geometry} material={mat} position={[-0.748, 1.018, 0.005]} rotation={[-Math.PI, 0, Math.PI / 2]} scale={[0.862, 1, 0.75]} />
-    //         <mesh geometry={nodes.door_1_face4.geometry} material={mat} position={[0, 1.018, 0.754]} rotation={[-Math.PI / 2, Math.PI / 2, 0]} scale={[0.862, 1, 0.761]} />
-    // </mesh>
-    <mesh name="ndoor" geometry={nodes.ndoor.geometry} material={mat_0} position={[props.x,0,props.z]}>
-            <mesh ref={faceRef} name="door_1_face1" geometry={nodes.door_1_face1.geometry} material={mat} position={[-0.01, 1.132, -0.693]} rotation={[-Math.PI / 2, Math.PI / 2, 0]} scale={[0.862, 1, 0.761]} />
-            <mesh name="door_1_face2" geometry={nodes.door_1_face2.geometry} material={mat} position={[0.705, 1.137, 0.008]} rotation={[0, 0, -Math.PI / 2]} scale={[0.862, 1, 0.75]} />
-            <mesh name="door_1_face3" geometry={nodes.door_1_face3.geometry} material={mat} position={[-0.72, 1.119, 0.024]} rotation={[-Math.PI, 0, Math.PI / 2]} scale={[0.862, 1, 0.75]} />
-            <mesh name="door_1_face4" geometry={nodes.door_1_face4.geometry} material={mat} position={[-0.008, 1.138, 0.736]} rotation={[-Math.PI / 2, Math.PI / 2, 0]} scale={[0.862, 1, 0.761]} />
+    <mesh geometry={nodes.exit2.geometry} rotation={[0,0,0]} material={new THREE.MeshMatcapMaterial({color:'cyan'})} position={[props.x,0,props.z]} >
+        <mesh ref={exitDoorShaderRef} geometry={nodes.exit2shad.geometry} material={mat} position={[0, 1.047, 0]} />
     </mesh>
 
     
@@ -1067,8 +1290,8 @@ export function Barier_Model(props)
   
   return(     <>
                      {props.customModel == 'none'?
-                      <mesh ref={modelRef} name="nbarrier" geometry={nodes.nbarrier.geometry} material={mat} position={[props.x,0,props.z]} rotation={[0,(props.orientation == 'FRONT'?0:Math.PI*0.5),0]} >
-                          <mesh ref={planeRef} name="nbarrierplane" geometry={nodes.nbarrierplane.geometry} material={mat2} position={[0.008, 0.912, 0]} rotation={[Math.PI / 2, 0, 0]} />
+                      <mesh ref={modelRef} name="nbarrier" geometry={nodes.barrier.geometry} material={new THREE.MeshMatcapMaterial({color:'gray'})} position={[props.x,0,props.z]} >
+                          <mesh ref={planeRef} name="nbarrierplane" geometry={nodes.barrierShad.geometry} material={mat2} position={[0, 1.048, 0]} />
                       </mesh>
                       :
                       <group ref={modelRef} position={[props.x,0,props.z]} rotation={[0,(props.orientation == 'FRONT'?0:Math.PI*0.5),0]}>
@@ -1141,6 +1364,29 @@ export function BulletCollisionEffect(props)
     <spriteMaterial visible={true} color={'white'} depthWrite={true}  />
     </sprite>
     </>
+  )
+}
+export function BallPortalModel(props)
+{
+  const { nodes, materials } = useGLTF('/model.glb');
+  let _appContext = useContext(appContext);
+  let portalRef = useRef(null);
+  const mat = new THREE.MeshMatcapMaterial({color:'gray'})
+  let partalShaders = new THREE.ShaderMaterial({transparent:true,side:THREE.DoubleSide,vertexShader:portal2vertex,fragmentShader:portal2frags,uniforms:{utime:{value:0}}})
+  let _utime = 0;
+  useFrame(()=>
+  {
+    _utime += 0.01;
+    partalShaders.uniforms.utime.value = _utime;
+  })
+  useEffect(()=>
+    { 
+      
+    },[])
+  return(
+    <mesh ref={portalRef}  geometry={nodes.portal_2.geometry} material={mat} position={[props.x,2.2,props.z]}>
+            <mesh geometry={nodes.portal_2_glass.geometry} material={partalShaders} position={[0, -0.839, 0]} ></mesh>
+    </mesh>
   )
 }
 useGLTF.preload('/model.glb')

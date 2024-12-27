@@ -8,13 +8,13 @@ import { storyText } from "./gameStory";
 
 /**
  * 
- * @param {{mapTexture:string,mobToKill:number,keyNumber:number,finalLevel:boolean,playerPosition:number,fog:boolean}} param0 
+ * @param {{mapTexture:string,mobToKill:number,keyNumber:number,batteryToPlace:number,finalLevel:boolean,playerPosition:number,fog:boolean}} param0 
  * @returns 
  */
-export function UpdateLevelConfig({mapTexture,mobToKill,keyNumber,finalLevel,playerPosition,fog})
+export function UpdateLevelConfig({mapTexture,mobToKill,batteryToPlace,keyNumber,finalLevel,playerPosition,fog})
 {
   const AppCntext = useContext(appContext);
-
+  AppCntext.levelInfo.current.battery = batteryToPlace? batteryToPlace : 0;
   AppCntext.levelInfo.current._MobToKillNumber = mobToKill? mobToKill : 0;
   AppCntext.levelInfo.current._KeyNumber = keyNumber? keyNumber : 0;
   AppCntext.levelInfo.current.finalLevel = finalLevel? finalLevel : false;
@@ -61,10 +61,10 @@ export function UpdatePlayerStat({moveSpeed,life,maxLife,shootInterval,shootPowe
 
 /**
  * 
- * @param {{position:number[],name:string,value:number|null,important:boolean,life:number,customModel:JSX.Element,skin:string}} param0 
+ * @param {{position:number[],name:string,value:number|null,_canMove:boolean,_type:string,important:boolean,life:number,customModel:JSX.Element,skin:string}} param0 
  * @returns 
  */
-export function AddItem({position,name,value,important,life,children,customModel,skin})
+export function AddItem({position,name,value,_canMove,_type,important,life,children,customModel,skin})
 {
   const AppCntext = useContext(appContext);
   let hasChildObject = false;
@@ -86,6 +86,18 @@ export function AddItem({position,name,value,important,life,children,customModel
     {
       objectDetailArr[i] = {position:position[i],objectName:name,skin:skin?skin:'coin_item_1',value:value?value:1,isImportant:important?important:false,customModel:customModel?customModel:'none'}
     }
+    else if(name == 'bomb_item')
+    {
+      objectDetailArr[i] = {position:position[i],objectName:name,skin:skin?skin:'bomb_item_1',value:value?value:1,canMove:_canMove?_canMove:false,isImportant:important?important:false,customModel:customModel?customModel:'none'}
+    }
+    else if(name == 'battery_item')
+    {
+      objectDetailArr[i] = {position:position[i],objectName:name,skin:skin?skin:'battery_item_1',value:value?value:1,canMove:_canMove?_canMove:false,isImportant:important?important:false,customModel:customModel?customModel:'none'}
+    }
+    else if(name == 'portal_item')
+    {
+      objectDetailArr[i] = {position:position[i],objectName:name,skin:skin?skin:'portal_item_1',type:_type,customModel:customModel?customModel:'none'}
+    }
     else if(name == 'box_item')
     {
       
@@ -103,6 +115,7 @@ export function AddItem({position,name,value,important,life,children,customModel
       
               if(hasChildObject == 'heal_item'){childObjectSkin = skin?skin:'heal_item_1';childObjectIsImportant = children[0].props.important? children[0].props.important : false; }
               if(hasChildObject == 'coin_item'){childObjectSkin = skin?skin:'coin_item_1';childObjectIsImportant = children[0].props.important? children[0].props.important : false;}
+              if(hasChildObject == 'bomb_item'){childObjectSkin = skin?skin:'bomb_item_1';childObjectIsImportant = children[0].props.important? children[0].props.important : false;}
               if(hasChildObject == 'upgrade_life_item'){childObjectSkin =  skin?skin:'upgrade_life_item';childObjectIsImportant = children[0].props.important? children[0].props.important : false;}
               if(hasChildObject == 'upgrade_shoot_power_item'){childObjectSkin =  skin?skin:'upgrade_shoot_power_item';childObjectIsImportant = children[0].props.important? children[0].props.important : false;}
               if(hasChildObject == 'upgrade_shoot_speed_item'){childObjectSkin =  skin?skin:'upgrade_shoot_speed_item';childObjectIsImportant = children[0].props.important? children[0].props.important : false;}
@@ -124,6 +137,7 @@ export function AddItem({position,name,value,important,life,children,customModel
       
                 if(hasChildObject == 'heal_item'){childObjectSkin = skin?skin:'heal_item_1';childObjectIsImportant = children.props.important? children.props.important : false;}
                 if(hasChildObject == 'coin_item'){childObjectSkin = skin?skin:'coin_item_1';childObjectIsImportant = children.props.important? children.props.important : false;}
+                if(hasChildObject == 'bomb_item'){childObjectSkin = skin?skin:'bomb_item_1';childObjectIsImportant = children.props.important? children.props.important : false;}
                 if(hasChildObject == 'upgrade_life_item'){childObjectSkin =  skin?skin:'upgrade_life_item';childObjectIsImportant = children.props.important? children.props.important : false;}
                 if(hasChildObject == 'upgrade_shoot_power_item'){childObjectSkin =  skin?skin:'upgrade_shoot_power_item';childObjectIsImportant = children.props.important? children.props.important : false;}
                 if(hasChildObject == 'upgrade_shoot_speed_item'){childObjectSkin =  skin?skin:'upgrade_shoot_speed_item';childObjectIsImportant = children.props.important? children.props.important : false;}
@@ -169,25 +183,34 @@ export function AddItem({position,name,value,important,life,children,customModel
   }
   return null
 }
-// export function AddWeapon(props)
-// {
-//   const AppCntext = useContext(appContext);
-//   let objectDetailArr = []
+/**
+ * 
+ * @param {{position:number[],name:string,_canMove:boolean,customModel:JSX.Element,skin:string}} param0 
+ * @returns 
+ */
+export function AddDynamicObject({position,name,_canMove,customModel,skin})
+{
+  const AppCntext = useContext(appContext);
+  let objectDetailArr = [];
+  for(let i = 0;i<position.length;i++)
+  {
+      if(name == 'bomb_item')
+      {
+        objectDetailArr[i] = {position:position[i],objectName:name,skin:skin?skin:'bomb_item_1',canMove:_canMove?_canMove:true,customModel:customModel?customModel:'none'}
+      }
+      else if(name == 'battery_item')
+      {
+        objectDetailArr[i] = {position:position[i],objectName:name,skin:skin?skin:'battery_item_1',canMove:_canMove?_canMove:true,customModel:customModel?customModel:'none'}
+      }
+  }
 
-//   for(let i = 0;i<props.position.length;i++)
-//   {
-
-//       objectDetailArr[i] = {position:props.position[i],objectName:'weapon_item',skin:props.name,isImportant:true}
-    
-   
-//   }
-//   for(let i =0;i<(AppCntext.mapWidth.current*AppCntext.mapHeight.current);i++)
-//   {   
-//       createObject(AppCntext.gameMap.current,'item',objectDetailArr,i);
+  for(let i =0;i<(AppCntext.mapWidth.current*AppCntext.mapHeight.current);i++)
+  {   
+      createObject(AppCntext.gameMap.current,'dynamic_object',objectDetailArr,i);
       
-//   }
-//   return null
-// }
+  }
+  return null;
+}
 /**
  * 
  * @param {{position:number,skin:string,customModel:JSX.Element}} param0 

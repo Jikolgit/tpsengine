@@ -4,44 +4,60 @@ Command: npx gltfjsx@6.5.3 ./public/model.glb
 */
 
 import React from 'react'
-import { useGLTF, useAnimations } from '@react-three/drei'
+import { useGLTF } from '@react-three/drei'
 
 export function Model(props) {
-  const group = React.useRef()
-  const { nodes, materials, animations } = useGLTF('/model.glb')
-  const { actions } = useAnimations(animations, group)
+  const { nodes, materials } = useGLTF('/model.glb')
   return (
-    <group ref={group} {...props} dispose={null}>
-      <group name="Scene">
-        <mesh name="wall_1" geometry={nodes.wall_1.geometry} material={nodes.wall_1.material} position={[13, -0.099, 0.982]} />
-        <mesh name="spear_1" geometry={nodes.spear_1.geometry} material={nodes.spear_1.material} position={[1, 1.775, -0.224]} rotation={[0.842, 0, 0]} />
-        <mesh name="planeGround" geometry={nodes.planeGround.geometry} material={nodes.planeGround.material} position={[1, 0, -2]} />
-        <mesh name="nArrow" geometry={nodes.nArrow.geometry} material={nodes.nArrow.material} position={[1.166, 1.588, 1.595]} rotation={[Math.PI / 2, 0, 0]} />
-        <mesh name="nWall" geometry={nodes.nWall.geometry} material={nodes.nWall.material} position={[5, 0, -2]} />
-        <mesh name="ndecor1" geometry={nodes.ndecor1.geometry} material={nodes.ndecor1.material} position={[7.1, 0.002, -2]} />
-        <mesh name="ndecor2" geometry={nodes.ndecor2.geometry} material={nodes.ndecor2.material} position={[3, 0.02, -2]} />
-        <mesh name="key_1" geometry={nodes.key_1.geometry} material={nodes.key_1.material} position={[13.002, 0.83, -2]} />
-        <mesh name="crate_1" geometry={nodes.crate_1.geometry} material={nodes.crate_1.material} position={[9.005, 1.002, -2]} />
-        <mesh name="nbarrier" geometry={nodes.nbarrier.geometry} material={nodes.nbarrier.material} position={[14.992, 0.001, -2]}>
-          <mesh name="nbarrierplane" geometry={nodes.nbarrierplane.geometry} material={nodes.nbarrierplane.material} position={[11.582, 0.912, -8.009]} rotation={[Math.PI / 2, Math.PI / 2, 0]} />
+    <group {...props} dispose={null}>
+      <mesh geometry={nodes.wall_1.geometry} material={nodes.wall_1.material} position={[13, -0.099, 0.982]} />
+      <mesh geometry={nodes.planeGround.geometry} material={nodes.planeGround.material} position={[1, 0, -2]} />
+      <mesh geometry={nodes.nWall.geometry} material={nodes.nWall.material} position={[5, 0, -2]} />
+      <mesh geometry={nodes.ndecor1.geometry} material={nodes.ndecor1.material} position={[7.1, 0.002, -2]} />
+      <mesh geometry={nodes.ndecor2.geometry} material={nodes.ndecor2.material} position={[3, 0.02, -2]} />
+      <mesh geometry={nodes.player1.geometry} material={nodes.player1.material} position={[0, 1, 0]}>
+        <mesh geometry={nodes.player1Gun.geometry} material={nodes.player1Gun.material} position={[0.298, 0.853, 0.861]} />
+        <mesh geometry={nodes.player1Screen.geometry} material={nodes.player1Screen.material} />
+        <mesh geometry={nodes.player1Wheel_1.geometry} material={nodes.player1Wheel_1.material} position={[0.388, -0.672, 0.394]} />
+        <mesh geometry={nodes.player1Wheel_2.geometry} material={nodes.player1Wheel_2.material} position={[0.388, -0.672, -0.406]} />
+        <mesh geometry={nodes.player1Wheel_3.geometry} material={nodes.player1Wheel_3.material} position={[-0.379, -0.672, 0.394]} rotation={[Math.PI, 0, Math.PI]} />
+        <mesh geometry={nodes.player1Wheel_4.geometry} material={nodes.player1Wheel_4.material} position={[-0.379, -0.672, -0.406]} rotation={[Math.PI, 0, Math.PI]} />
+      </mesh>
+      <mesh geometry={nodes.bulletmodel1.geometry} material={nodes.bulletmodel1.material} position={[1.643, 1.862, 1.22]} rotation={[Math.PI / 2, -Math.PI / 2, 0]} />
+      <mesh geometry={nodes.coinmodel1.geometry} material={nodes.coinmodel1.material} position={[-2.992, 0.877, 0]} />
+      <mesh geometry={nodes.bombmodel1.geometry} material={nodes.bombmodel1.material} position={[-2, 0.6, 3]}>
+        <mesh geometry={nodes.bombmodel1belt.geometry} material={nodes.bombmodel1belt.material} />
+        <mesh geometry={nodes.bombmodel1head.geometry} material={nodes.bombmodel1head.material} />
+      </mesh>
+      <mesh geometry={nodes.playermodel2.geometry} material={nodes.playermodel2.material} position={[-5, 1.2, 0]}>
+        <mesh geometry={nodes.playerHat.geometry} material={nodes.playerHat.material} position={[0, 0.273, -0.273]} />
+        <mesh geometry={nodes.playermodel2Screen.geometry} material={nodes.playermodel2Screen.material} />
+      </mesh>
+      <mesh geometry={nodes.portal_2.geometry} material={nodes.portal_2.material} position={[-2.007, 1.857, -2.037]}>
+        <mesh geometry={nodes.portal_2_glass.geometry} material={nodes.portal_2_glass.material} position={[0, -0.839, 0]} />
+      </mesh>
+      <mesh geometry={nodes.battery.geometry} material={nodes.battery.material} position={[-8.007, -0.048, -2.037]}>
+        <mesh geometry={nodes.batteryHead.geometry} material={nodes.batteryHead.material} position={[0, 1.5, 0]} />
+      </mesh>
+      <mesh geometry={nodes.bomb.geometry} material={nodes.bomb.material} position={[-9.979, 0.524, -1.998]} rotation={[0, 0, -Math.PI / 2]}>
+        <mesh geometry={nodes.bombScreen.geometry} material={nodes.bombScreen.material} position={[-0.204, 0, 0.569]} rotation={[0, 0, Math.PI / 2]}>
+          <mesh geometry={nodes.bombScreen2.geometry} material={nodes.bombScreen2.material} />
         </mesh>
-        <mesh name="nmob1" geometry={nodes.nmob1.geometry} material={nodes.nmob1.material} position={[10.087, 0.701, -2.005]}>
-          <mesh name="nmob1_hand_l" geometry={nodes.nmob1_hand_l.geometry} material={nodes.nmob1_hand_l.material} position={[0.639, -0.473, -0.066]} />
-          <mesh name="nmob1_hand_r" geometry={nodes.nmob1_hand_r.geometry} material={nodes.nmob1_hand_r.material} position={[-0.639, -0.494, 0]} />
-          <mesh name="nmob1head" geometry={nodes.nmob1head.geometry} material={nodes.nmob1head.material} />
-          <mesh name="nmob1horn" geometry={nodes.nmob1horn.geometry} material={nodes.nmob1horn.material} />
-        </mesh>
-        <mesh name="key2" geometry={nodes.key2.geometry} material={nodes.key2.material} position={[18.002, 1.019, -2.018]} rotation={[Math.PI / 2, 0, 0]} />
-        <mesh name="ndoor" geometry={nodes.ndoor.geometry} material={nodes.ndoor.material} position={[20.969, 0.009, -2.018]}>
-          <mesh name="door_1_face1" geometry={nodes.door_1_face1.geometry} material={nodes.door_1_face1.material} position={[-0.01, 1.132, -0.693]} rotation={[-Math.PI / 2, Math.PI / 2, 0]} scale={[0.862, 1, 0.761]} />
-          <mesh name="door_1_face2" geometry={nodes.door_1_face2.geometry} material={nodes.door_1_face2.material} position={[0.705, 1.137, 0.008]} rotation={[0, 0, -Math.PI / 2]} scale={[0.862, 1, 0.75]} />
-          <mesh name="door_1_face3" geometry={nodes.door_1_face3.geometry} material={nodes.door_1_face3.material} position={[-0.72, 1.119, 0.024]} rotation={[-Math.PI, 0, Math.PI / 2]} scale={[0.862, 1, 0.75]} />
-          <mesh name="door_1_face4" geometry={nodes.door_1_face4.geometry} material={nodes.door_1_face4.material} position={[-0.008, 1.138, 0.736]} rotation={[-Math.PI / 2, Math.PI / 2, 0]} scale={[0.862, 1, 0.761]} />
-        </mesh>
-        <mesh name="pheal_1" geometry={nodes.pheal_1.geometry} material={nodes.pheal_1.material} position={[38, 0.146, -5]} />
-        <mesh name="playerBullet_3" geometry={nodes.playerBullet_3.geometry} material={nodes.playerBullet_3.material} position={[40, 1.046, -5]} />
-        <mesh name="pmob_1" geometry={nodes.pmob_1.geometry} material={nodes.pmob_1.material} position={[34, 0.007, -3]} />
-      </group>
+      </mesh>
+      <mesh geometry={nodes.exit.geometry} material={nodes.exit.material} position={[-5.035, -0.001, -2.287]} rotation={[Math.PI, 0, Math.PI]}>
+        <mesh geometry={nodes.exitdoor.geometry} material={nodes.exitdoor.material} position={[0, 0, -1.178]} />
+      </mesh>
+      <mesh geometry={nodes.key2.geometry} material={nodes.key2.material} position={[0.913, 3.047, 0.06]} rotation={[Math.PI / 2, 0, 0]} />
+      <mesh geometry={nodes.tree2.geometry} material={nodes.tree2.material} position={[9.978, -0.002, -1.988]} />
+      <mesh geometry={nodes.clim.geometry} material={nodes.clim.material} position={[-12, 0, 0]} rotation={[Math.PI, 0, Math.PI]}>
+        <mesh geometry={nodes.climfan.geometry} material={nodes.climfan.material} position={[0.003, 0.796, 0.518]} />
+      </mesh>
+      <mesh geometry={nodes.exit2.geometry} material={nodes.exit2.material} position={[-10, 0, 0]}>
+        <mesh geometry={nodes.exit2shad.geometry} material={nodes.exit2shad.material} position={[0, 1.047, 0]} />
+      </mesh>
+      <mesh geometry={nodes.barrier.geometry} material={nodes.barrier.material} position={[3, 0.135, -4]}>
+        <mesh geometry={nodes.barrierShad.geometry} material={nodes.barrierShad.material} position={[0, 1.048, 0]} />
+      </mesh>
     </group>
   )
 }

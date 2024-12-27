@@ -11,7 +11,8 @@ objArg.getCameraPOsition.value = objArg.camRef.current.position.x;
 objArg.getorbitPosition.value = objArg.orbitRef.current.target.x
 objArg.getPlayerPosition.value += objArg.playerSpeed;
 objArg.getCameraPOsition.value += objArg.playerSpeed;
-objArg.getorbitPosition.value += objArg.playerSpeed
+objArg.getorbitPosition.value += objArg.playerSpeed;
+
 }
 else if(objArg.moveDirection.value == 'RIGHT')
 {
@@ -78,7 +79,11 @@ objArg.orbitRef.current.target.z = objArg.getorbitPosition.value
 objArg.camRef.current.position.z = objArg.getCameraPOsition.value;
 
 
+}
 
+if(objArg.objectCanMove.current.active) 
+{
+    objArg.itemController.value[objArg.objectCanMove.current.index]('MOVE-BOMB',{direction:objArg.moveDirection.value,speed:objArg.playerSpeed})
 }
 
 if(objArg.playerDistance.value == objArg.playerDistanceTarget.value)
@@ -89,12 +94,27 @@ if(objArg.playerDistance.value == objArg.playerDistanceTarget.value)
 //Sera vérifié une seule fois dans le addEventListener avant de declencher le move
 objArg.playerDistance.value = 0;
 objArg.playerMoveIsActive.current = false;
+
+if(objArg.objectCanMove.current.active)
+{
+    if(objArg.objectCanMove.current.objInfo.objectName == 'bomb_item')
+    {
+        objArg.itemController.value[objArg.objectCanMove.current.index]('ROLL-STOP',null)
+    }
+    
+    effectAfterMoveFinished(objArg);
+}
+objArg.objectCanMove.current.active = false;
+
+objArg.objectCanMove.current.index = null;
+objArg.objectCanMove.current.objInfo = null;
 // getCurrentPlatformInfo();
 // objArg._appContext.mobCallBackAfterPlayerMove.current();
 for(let i = 0; i<objArg.mobObjectIdArr.value.length;i++ )
 {
     objArg.mobUpdateFunc.current[objArg.mobObjectIdArr.value[i]]('CHECK-AREA')
 }
+
 objArg.getNextPlatformInfo(objArg.playerDirection,'AfterMove');
 if(objArg.aKeyisPressed.current)
 {
@@ -151,6 +171,99 @@ function updatePlayerPositionOnMap(objArg)
         else if(objArg.directionToGo.value == 'FRONT'){ objArg.playerPositionOnMap.z += objArg.playerDistanceTarget.value;}
         else if(objArg.directionToGo.value == 'BACK'){ objArg.playerPositionOnMap.z -= objArg.playerDistanceTarget.value;}
     }
+function updateObjectPositionOnMap(objArg,objectInfo)
+    {   
+        let currentObjectPlatformIndex=objectInfo.id;
+        let nextPlatformPose;
+        let findNextPlatform;
+        if(objArg.directionToGo.value == 'FRONT'){nextPlatformPose = {x:objectInfo.xPose,z:objectInfo.zPose+ objArg.playerDistanceTarget.value}}
+        if(objArg.directionToGo.value == 'BACK'){nextPlatformPose = {x:objectInfo.xPose,z:objectInfo.zPose- objArg.playerDistanceTarget.value}}
+        if(objArg.directionToGo.value == 'LEFT'){nextPlatformPose = {x:objectInfo.xPose+ objArg.playerDistanceTarget.value,z:objectInfo.zPose} }
+        if(objArg.directionToGo.value == 'RIGHT'){nextPlatformPose = {x:objectInfo.xPose- objArg.playerDistanceTarget.value,z:objectInfo.zPose} }
+        
+        let getNextPlatform = (elem)=>
+        {
+            return elem.xPose == nextPlatformPose.x && elem.zPose == nextPlatformPose.z
+        }
+        findNextPlatform = objArg.GameMap.find(getNextPlatform);
+
+        objArg.GameMap[findNextPlatform.id].object = true
+        objArg.GameMap[findNextPlatform.id].isOnScene = true
+        objArg.GameMap[findNextPlatform.id].objectType = structuredClone(objArg.GameMap[currentObjectPlatformIndex].objectType)
+        objArg.GameMap[findNextPlatform.id].objectId = structuredClone(objArg.GameMap[currentObjectPlatformIndex].objectId)
+        objArg.GameMap[findNextPlatform.id].objectDesc = structuredClone(objArg.GameMap[currentObjectPlatformIndex].objectDesc);
+        
+        if(objArg.GameMap[findNextPlatform.id].primaryObject == 'portal_item' && objectInfo.objectDesc.objectName=='battery_item')
+        {
+            objArg.GameMap[findNextPlatform.id].objectDesc.canMove = false;
+            objArg.objectCanMove.current.effectAfterMove = 'PLACE-BATTERY'
+            
+        }
+
+        objArg.GameMap[currentObjectPlatformIndex].object = false
+        objArg.GameMap[currentObjectPlatformIndex].isOnScene = false
+        objArg.GameMap[currentObjectPlatformIndex].objectType = "none"
+        objArg.GameMap[currentObjectPlatformIndex].objectId = "none"
+        objArg.GameMap[currentObjectPlatformIndex].objectDesc = null
+        
+
+        
+    }
+function checkIfObjectCanMoveNextPlatform(objArg,objectInfo,directionToGo)
+{
+        let nextPlatformInfo={x:objectInfo.xPose,z:objectInfo.zPose};
+        let findPlatform;
+        let checkPlatform = (elem)=>
+        {
+            return elem.xPose == nextPlatformInfo.x && elem.zPose == nextPlatformInfo.z
+        }
+
+        if(directionToGo == 'FRONT'){nextPlatformInfo.z = objectInfo.zPose + objArg.playerDistanceTarget.value }
+        if(directionToGo == 'BACK'){nextPlatformInfo.z = objectInfo.zPose - objArg.playerDistanceTarget.value }
+        if(directionToGo == 'LEFT'){nextPlatformInfo.x = objectInfo.xPose + objArg.playerDistanceTarget.value }
+        if(directionToGo == 'RIGHT'){nextPlatformInfo.x = objectInfo.xPose - objArg.playerDistanceTarget.value }
+
+        findPlatform = objArg.GameMap.find(checkPlatform);
+        
+        if(findPlatform.object || findPlatform.objectLimit)
+        {
+            
+            if(!findPlatform.objectLimit && findPlatform.objectDesc.objectName == 'portal_item')
+            {
+                // if(findPlatform.objectDesc.objectName == 'portal_item')
+                // {   
+                //     objArg.objectCanMove.current.effectAfterMove = 'STOP-MOVING'
+                // }
+                return true;
+            }
+            else
+            {
+                return false
+            }
+            
+        }
+        else
+        {
+            return true
+        }
+        
+}
+
+function effectAfterMoveFinished(objArg)
+{   
+    if(objArg.objectCanMove.current.effectAfterMove == 'PLACE-BATTERY')
+    {   
+        objArg.managePlayerKey();
+        objArg.objectCanMove.current.effectAfterMove = 'none'
+    }
+    
+    // let checkPlatform = (elem)=>
+    // {
+    //     return elem.xPose == objArg.objectCanMove.current.objInfo.xPose && elem.zPose == objArg.objectCanMove.current.objInfo.zPose 
+    // }
+    // let _result = objArg.GameMap.find(checkPlatform);
+    // console.log(_result)
+}
 function checkifElemCanMoveNextPlatform(objArg)
         {
             
@@ -232,8 +345,91 @@ function checkifElemCanMoveNextPlatform(objArg)
                                         }
                                         else if(_result.objectType == 'item')
                                         {
-                                            return false;
+                                           
+                                            if(_result.objectDesc.objectName == 'bomb_item' || _result.objectDesc.objectName == 'battery_item')
+                                            {
+                                                if(_result.objectDesc.canMove)
+                                                {
+                                                    let objectCanMove = checkIfObjectCanMoveNextPlatform(objArg,_result,objArg.moveDirection.value);
+                                                
+                                                    if(objectCanMove)
+                                                    {
+                                                        objArg.objectCanMove.current.active = true;
+                                                        objArg.objectCanMove.current.objInfo = _result;
+                                                        objArg.objectCanMove.current.index = _result.objectId;
+                                                        if(_result.objectDesc.objectName == 'bomb_item')
+                                                        {
+                                                            objArg.itemController.value[_result.objectId]('ROLL-BOMB',objArg.moveDirection.value)
+                                                        }
+                                                        
+                                                        updateObjectPositionOnMap(objArg,_result)
+                                                        return true;
+                                                    }
+                                                    else
+                                                    {
+                                                        if(_result.objectDesc.objectName == 'bomb_item')
+                                                        {
+                                                            objArg.itemController.value[_result.objectId]('ROLL-STOP',null) 
+                                                        }
+                                                        
+                                                        return false;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    return false
+                                                }
+                                                
+                                                
+                                            }
+                                            else if(_result.objectDesc.objectName == 'portal_item')
+                                            {
+                                                return true;
+                                            }
+                                            else
+                                            {
+                                                return false;
+                                            }
+                                            
+                                            
+                                            
                                         }
+                                        else if(_result.objectType == 'dynamic_object')
+                                            {
+                                               
+                                                if(_result.objectDesc.canMove)
+                                                {
+                                                    let objectCanMove = checkIfObjectCanMoveNextPlatform(objArg,_result,objArg.moveDirection.value);
+                                                
+                                                    if(objectCanMove)
+                                                    {
+                                                        objArg.objectCanMove.current.active = true;
+                                                        objArg.objectCanMove.current.objInfo = _result;
+                                                        objArg.objectCanMove.current.index = _result.objectId;
+                                                        if(_result.objectDesc.objectName == 'bomb_item')
+                                                        {
+                                                            objArg.itemController.value[_result.objectId]('ROLL-BOMB',objArg.moveDirection.value)
+                                                        }
+                                                        
+                                                        updateObjectPositionOnMap(objArg,_result)
+                                                        return true;
+                                                    }
+                                                    else
+                                                    {
+                                                        if(_result.objectDesc.objectName == 'bomb_item')
+                                                        {
+                                                            objArg.itemController.value[_result.objectId]('ROLL-STOP',null) 
+                                                        }
+                                                        
+                                                        return false;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    return false
+                                                }
+                                                
+                                            }
                                         else if(_result.objectType == 'Exitdoor' || _result.objectType == 'Exitdoor_Area')
                                         {
                                             return false

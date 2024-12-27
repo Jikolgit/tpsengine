@@ -102,7 +102,7 @@ export function getCookieFunc(name) {
   
               const encryptedSave = cryptoJs.AES.encrypt(_dataToEncrypt, secretKey).toString();
               
-              setCookieFunc('DW_SAVE',encryptedSave,5)
+              setCookieFunc('TPS_SAVE',encryptedSave,5)
   
               
   }

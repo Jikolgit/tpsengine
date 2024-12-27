@@ -27,7 +27,7 @@ export function createObject(map_level,objectType,objectIndexArr,index)
             }
             
             else if(objectType == 'mob')
-        {      
+            {      
                 map_level[index].active = true,map_level[index].hasEnemy = true, map_level[index].objectType ='mob' ,map_level[index].isOnScene = true
                 map_level[index].objectDesc={mobType:objectIndexArr[i].mobType,mobDifficulty:objectIndexArr[i].difficulty,mobSkin:objectIndexArr[i].mobSkin,life:objectIndexArr[i].life,
                                              hasObject:objectIndexArr[i].hasObject,objectName:objectIndexArr[i].hasObject,objectValue:objectIndexArr[i].objectValue,objectSkin:objectIndexArr[i].objectSkin,
@@ -39,7 +39,19 @@ export function createObject(map_level,objectType,objectIndexArr,index)
              
             }
             
-            
+            else if(objectType == 'dynamic_object')
+            {      
+                if(objectIndexArr[i].objectName == 'bomb_item' || objectIndexArr[i].objectName == 'battery_item')
+                {
+                    map_level[index].active = true,map_level[index].objectType = objectType, map_level[index].isOnScene = true
+                    map_level[index].objectDesc ={objectName:objectIndexArr[i].objectName,isImportant:objectIndexArr[i].isImportant,value:objectIndexArr[i].value,
+                        customModel:objectIndexArr[i].customModel,skin:objectIndexArr[i].skin,canMove:objectIndexArr[i].canMove,counterStart:false,timer:5},map_level[index].object = true,map_level[index].objectId = objectIdValue
+                    objectIdValue ++;
+                }
+
+                
+                
+            }
             else if(objectType == 'item')
             {   
                 
@@ -59,6 +71,15 @@ export function createObject(map_level,objectType,objectIndexArr,index)
                     map_level[index].active = true,map_level[index].objectType = objectType, map_level[index].isOnScene = true
                     map_level[index].objectDesc ={objectName:objectIndexArr[i].objectName,isImportant:objectIndexArr[i].isImportant,customModel:objectIndexArr[i].customModel,
                         value:objectIndexArr[i].value,skin:objectIndexArr[i].skin},map_level[index].object = true,map_level[index].objectId = objectIdValue
+                    objectIdValue ++;
+                }
+
+                
+                else if(objectIndexArr[i].objectName == 'portal_item')
+                {
+                    map_level[index].active = true,map_level[index].objectType = objectType, map_level[index].isOnScene = true
+                    map_level[index].primaryObject = 'portal_item'
+                    map_level[index].objectDesc ={objectName:objectIndexArr[i].objectName,portalType:objectIndexArr[i].type,skin:objectIndexArr[i].skin},map_level[index].object = true,map_level[index].objectId = objectIdValue
                     objectIdValue ++;
                 }
                 else

@@ -35,7 +35,7 @@ export function GameApp(props)
     let camRotateStart = useRef(false);
     let camRotateInfo = {left:{x:3,xCamValue:0,z:1,zCamValue:0,counter:0}};
     let bulletContainer = [];
-    let playerDirection = {value:'FRONT'};
+    let playerDirection = {value:'BACK'};
     let objectContainer = useRef([]);
     let bulletRef = useRef([]);
     let bulletRefInfo = useRef([]);
@@ -59,6 +59,8 @@ export function GameApp(props)
     let mobIndexArr = {value:[]};
     let barierMapIndexArr = {value:[]};
     let barierModelIndexArr = {value:[]};
+    let objectCanMove = useRef({active:false,index:null,objInfo:null,effectAfterMove:'none'});
+    let movableObjectIndexArr = {value:[]};
     let playerCanShoot = true;
     // let playerCanShoot = _appContext.level.current == 1? false : true;
     let currentObjectInFront={effect:'none',objectInfo:null};
@@ -83,7 +85,8 @@ export function GameApp(props)
 
             // IF _KeyNumber > 0 PLAYER MUST COLLECT ALL THE KEY IN THE AREA BEFORE GOING TO THE NEXT LEVEL
             if(gameMapInfo._KeyNumber != 0)
-            {
+            {   
+                console.log(_appContext.playerStats.current.keyCollected+' et '+gameMapInfo._KeyNumber)
                 if(_appContext.playerStats.current.keyCollected == gameMapInfo._KeyNumber )
                 {
                     openExitDoor();
@@ -180,6 +183,7 @@ export function GameApp(props)
     let managePlayerKey = ()=>
         {
             _appContext.playerStats.current.keyCollected ++;
+            console.log(_appContext.playerStats.current.keyCollected)
             checkBarierCondition();
             checkWinCondition();
         }
@@ -299,7 +303,7 @@ export function GameApp(props)
                 // if(_when == 'AfterMove')
                 // {
                     if(result)
-                    {
+                    {   
                         if(result.objectType=='item')
                         {
                             if(result.objectDesc.objectName=='weapon_item'){setActionButtonEffect('TAKE-SPEAR',result)}
@@ -320,13 +324,13 @@ export function GameApp(props)
                             {  
                                 setActionButtonEffect('TAKE-UPGRADE',result)
                             }
-                            else if(result.objectDesc.objectName=='wall_1')
+                            else if(result.objectDesc.objectName=='bomb_item')
                             {
-
+                                setActionButtonEffect('bomb',result)
                             }
 
                         }
-  
+                        
                         else if(result.objectType=='Exitdoor')
                         {
                             setActionButtonEffect('Exit',result)
@@ -429,6 +433,12 @@ export function GameApp(props)
                 }
 
 
+            }
+            else if(effect =='bomb')
+            {
+                
+                _appContext.toggleActionIcon('INTERACT');
+                currentObjectInFront.effect ='bomb';
             }
             else if(effect =='Exit')
             {
@@ -806,7 +816,7 @@ export function GameApp(props)
                             else if (currentObjectInFront.effect == 'UPGRADE')
                             {
                                 AudioManage.play('coin')
-
+                                currentObjectInFront.objectInfo.object = false;
                                 currentObjectInFront.objectInfo.isOnScene = false;
 
                                 if(currentObjectInFront.objectInfo.objectDesc.fromMob)
@@ -837,7 +847,7 @@ export function GameApp(props)
                                 AudioManage.play('coin')
 
                                 if(currentObjectInFront.objectInfo.objectDesc.isImportant){managePlayerKey()}
-                                
+                                currentObjectInFront.objectInfo.object = false;
                                 currentObjectInFront.objectInfo.isOnScene = false;
 
                                 if(currentObjectInFront.objectInfo.objectDesc.fromMob)
@@ -865,7 +875,7 @@ export function GameApp(props)
                             else if (currentObjectInFront.effect == 'KEY')
                             {
                                 AudioManage.play('coin')
-                                
+                                currentObjectInFront.objectInfo.object = false;
                                 currentObjectInFront.objectInfo.isOnScene = false;
 
                                 if(currentObjectInFront.objectInfo.objectDesc.fromMob)
@@ -883,12 +893,22 @@ export function GameApp(props)
                                 getNextPlatformInfo(playerDirection,'AfterMove');
 
                             }
+                            else if (currentObjectInFront.effect == 'bomb')
+                            {
+                                AudioManage.play('coin')
+                                
+
+                                itemController.value[currentObjectInFront.objectInfo.objectId]('START-BOMB-COUNTER',currentObjectInFront.objectInfo)
+
+                                getNextPlatformInfo(playerDirection,'AfterMove');
+
+                            }
                             else if (currentObjectInFront.effect == 'HEAL')
                             {
                                 AudioManage.play('heal');
                                 _appContext.ScreenHaloCOntroller.current('GLOW-GREEN')
                                 if(currentObjectInFront.objectInfo.objectDesc.isImportant){managePlayerKey()}
-                                
+                                currentObjectInFront.objectInfo.object = false;
                                 currentObjectInFront.objectInfo.isOnScene = false;
                                 if(currentObjectInFront.objectInfo.objectDesc.fromMob)
                                 {
@@ -964,14 +984,14 @@ export function GameApp(props)
         bulletContainer[i] = <mesh
                                 key={i}
                                 position={[playerPoseVar.x,0.6,playerPoseVar.z]}
-                                rotation={[0,0,0]}
+                                rotation={[0,Math.PI,0]}
                                 ref={(val)=> bulletRef.current[i] = val }
                                 >
                                     <sphereGeometry args={[0.05,10,10]} />
                                     <meshBasicMaterial visible={false}  />
 
                                     <BulletModel controller={{bulletModelController:bulletModelController,index:i}} _rotation={[Math.PI*0.5,0,0]}  
-                                    _visible={false} posX={0} posY={0} posZ={0} />
+                                    _visible={false} posX={0.298} posY={1.4} posZ={0.861}/>
                             </mesh>
         bulletRefInfo.current[i] = {_index:i,isShooted:false,prepareMove:false,move:"none",direction:'none',hasCheckNextPlatform:false,moveDistance:0};
         bulletPositionOnMap[i] = {x:playerPoseVar.x,y:0.6,z:playerPoseVar.z};
@@ -1056,14 +1076,14 @@ export function GameApp(props)
             gloBalObject,bulletSpeed,nextBulletToShoot,bulletPositionOnMap,mobUpdateFunc,checkWinCondition,objectContainer,exitDoorMapIndexArr,
             barierMapIndexArr,mobIndexArr,_appContext,spearScale,barierModelIndexArr,level,exitDoorVisible,itemController,
             wallController,exitDoorController,showWeapon3DModel,bulletModelController,platformModelContainer,wallModelContainer,mobObjectIdArr,
-            checkBarierCondition
+            checkBarierCondition,movableObjectIndexArr,objectCanMove,managePlayerKey
 
             }
         placeModelOnScene(gloBalObject)
 
     return <>
                 <gameAppContext.Provider
-                    value={{GameMap,playerPositionOnMap,playerMoveIsActive,enemyLifePoint,reducePlayerLife,mobUpdateFunc,mobObjectIdArr,barierModelIndexArr,exitDoorModelIndexArr}}
+                    value={{GameMap,objectCanMove,playerPositionOnMap,playerMoveIsActive,enemyLifePoint,reducePlayerLife,mobUpdateFunc,mobObjectIdArr,barierModelIndexArr,exitDoorModelIndexArr}}
                 >
 
                         {_appContext.devMode.current?
@@ -1073,7 +1093,7 @@ export function GameApp(props)
                             </>
                         :
                             <>
-                            <PerspectiveCamera position={[playerPoseVar.x,8,playerPoseVar.z-5]} ref={camRef} makeDefault />
+                            <PerspectiveCamera position={[playerPoseVar.x,10,playerPoseVar.z-7]} ref={camRef} makeDefault />
                             <OrbitControls enableRotate={false} enableZoom={false} enablePan={false} target={[playerPoseVar.x,0.8,playerPoseVar.z+2]} ref={orbitRef} />
                             </>
                         }
@@ -1096,7 +1116,7 @@ export function GameApp(props)
 
 
                         </mesh> */}
-                        <group ref={playerCursorRef} rotation={[0,0,0]} position={[playerPositionOnMap.x,0,playerPositionOnMap.z]} >
+                        <group ref={playerCursorRef} rotation={[0,Math.PI,0]} position={[playerPositionOnMap.x,0,playerPositionOnMap.z]} >
                                 <PlayerDirection  />
                         </group>
                         
