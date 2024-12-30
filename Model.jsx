@@ -13,7 +13,6 @@ export function Model(props) {
       <mesh geometry={nodes.wall_1.geometry} material={nodes.wall_1.material} position={[13, -0.099, 0.982]} />
       <mesh geometry={nodes.planeGround.geometry} material={nodes.planeGround.material} position={[1, 0, -2]} />
       <mesh geometry={nodes.nWall.geometry} material={nodes.nWall.material} position={[5, 0, -2]} />
-      <mesh geometry={nodes.ndecor1.geometry} material={nodes.ndecor1.material} position={[7.1, 0.002, -2]} />
       <mesh geometry={nodes.ndecor2.geometry} material={nodes.ndecor2.material} position={[3, 0.02, -2]} />
       <mesh geometry={nodes.player1.geometry} material={nodes.player1.material} position={[0, 1, 0]}>
         <mesh geometry={nodes.player1Gun.geometry} material={nodes.player1Gun.material} position={[0.298, 0.853, 0.861]} />
@@ -57,6 +56,10 @@ export function Model(props) {
       </mesh>
       <mesh geometry={nodes.barrier.geometry} material={nodes.barrier.material} position={[3, 0.135, -4]}>
         <mesh geometry={nodes.barrierShad.geometry} material={nodes.barrierShad.material} position={[0, 1.048, 0]} />
+      </mesh>
+      <mesh geometry={nodes.box2.geometry} material={nodes.box2.material} position={[3, 0.605, 0]} />
+      <mesh geometry={nodes.mousemob.geometry} material={nodes.mousemob.material} position={[7, 0.047, -4]}>
+        <mesh geometry={nodes.mousemobEye.geometry} material={nodes.mousemobEye.material} />
       </mesh>
     </group>
   )

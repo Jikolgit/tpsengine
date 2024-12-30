@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { useContext, useRef } from "react";
 import { appContext } from "../src/App";
-import { AddDecor, AddDoor, AddItem, AddMob, AddChildItem, SetMapDimension, UpdateLevelConfig, AddWall, AddBarrier, UpdateStroryScreen, UpdatePlayerStat, AddDynamicObject } from "./DefaultComponents";
+import { AddDecor, AddDoor, AddItem, AddMob, AddChildItem, SetMapDimension, UpdateLevelConfig, AddWall, AddBarrier, UpdateStroryScreen, UpdatePlayerStat, AddDynamicObject, AddTestModel } from "./DefaultComponents";
 import { MobModelContext } from './Game3DAssets';
 
 // HERE YOU CAN SETUP YOUR LEVELS
@@ -40,12 +40,13 @@ export function Settings()
 
                             <SetMapDimension width={15} height={15} />
                             <AddDecor position={[71,168,32]} skin="tombstone" />
-                            <AddDecor position={[145]} skin="lampadaire" />
+                            {/* <AddDecor position={[145]} skin="lampadaire" /> */}
                             {/* <AddItem position={[21]}  name='coin_item' skin='coin_item_2' /> */}
                             {/* <AddItem position={[94]} name='bomb_item' _canMove={true} skin='bomb_item_1' /> */}
                             {/* <AddItem position={[24]} name='portal_item' _type='red' /> */}
                             {/* <AddItem position={[98]} name='bomb_item' _canMove={true} skin='bomb_item_1' /> */}
-                            <AddItem position={[98]} name="key_item" important={true} />
+                            <AddItem name='coin_item' position={[96,97,98,126,127,128,111,113]} skin='coin_item_2' />
+                            <AddItem position={[112]} name="key_item" />
                             {/* <AddDoor position={[38]} open  /> */}
                             <AddDoor position={[187]}  />
                         </>
@@ -54,67 +55,84 @@ export function Settings()
                         <>
                             <UpdateLevelConfig playerPosition={10} batteryToPlace={2}  />
                            
-                            <SetMapDimension width={7} height={15} addWallOnMap />
-                            <AddItem position={[71,75]} name='portal_item' _type='red' />
+                            <SetMapDimension width={7} height={15}  />
+                            <AddBarrier position={[56,57,58,59,60,61,62]} orientation='HORIZONTAL' batteryNeeded={2} />
+                            <AddItem position={[43,47]} name='portal_item' _portalID='01' _type='red' />
+                            {/* <AddItem position={[38,59]} name='key_item' /> */}
                             {/* <AddItem position={[29,33]} name='battery_item' _canMove={true} skin='battery_item_1' /> */}
-                            <AddDynamicObject position={[29,33]} name='battery_item' _canMove={true} skin='battery_item_1' />
-                    
+                            <AddDynamicObject position={[16,18]} _dObjectID='01' name='battery_item' _canMove={true} skin='battery_item_1' />
 
                             <AddDoor position={[94]} />
                         </>
                     }
                     {AppContext.level.current == 3 &&
                         <>
-                            <UpdateLevelConfig playerPosition={10} keyNumber={2} />
-                            <SetMapDimension width={7} height={15} addWallOnMap />
-                            <UpdateStroryScreen>
-                                <div>Shoot the <span className="text-red-500">Ghost</span> to open the portal</div>
-                            </UpdateStroryScreen>
-                            <AddBarrier position={[64,65,66,67,68]} />
-
+                            <UpdateLevelConfig playerPosition={10} keyNumber={1} />
+                            <SetMapDimension width={7} height={15}  />
                             
+                            <AddItem position={[52]} name='box_item' life={3}>
+                                <AddChildItem name='key_item' />
+                            </AddItem>
+                            <AddDynamicObject position={[31]}  name='bomb_item' _blastArea={1} _bombCounter={2} _canMove={true} skin='bomb_item_1' />
+                            <AddDynamicObject position={[32,33,40,47,54]} _activable={false}  name='bomb_item' _blastArea={1} _bombCounter={3} _canMove={true} skin='bomb_item_2' />
                             <AddDoor position={[94]} />
                         </>
                     }
                     {AppContext.level.current == 4 &&
                         <>
-                            <UpdateLevelConfig playerPosition={10} mobToKill={3}  />
-                            <SetMapDimension width={7} height={15} addWallOnMap />
-                           
-                            <AddMob position={[52,60,58]} type="2" important>
-                                    <AddChildItem name="coin_item" value={5} />
-                            </AddMob>
-                            <AddDoor position={[94]} />
+                            <UpdateLevelConfig playerPosition={50} keyNumber={1} barrierBattery={2}  />
+                            <SetMapDimension width={20} height={20} />
+                            <AddDynamicObject position={[156]} name='battery_item' _dObjectID='01' _canMove={true} />
+                            <AddDynamicObject position={[223]} name='battery_item' _dObjectID='02' _canMove={true} />
+                            {/* <AddDynamicObject position={[125]} name='bomb_item' _canMove={true} /> */}
+                            <AddItem position={[285]} name='portal_item' _portalID='01' _type='red' />
+                            <AddItem position={[295]} name='portal_item' _portalID='02' _type='red' />
+                            <AddItem position={[190]} name='key_item' />
+                            <AddBarrier position={[170,210]} orientation='HORIZONTAL' />
+                            <AddBarrier position={[189,191]} orientation='VERTICAL' />
+                            <AddWall position={[169,171,209,211]} />
+                            <AddDoor position={[310]} />
                         </>
                     }
                     {AppContext.level.current == 5 &&
                         <>
                             <UpdateLevelConfig playerPosition={10} keyNumber={2}  />
-                            <SetMapDimension width={7} height={15} addWallOnMap />
-                            <UpdateStroryScreen>
+                            <SetMapDimension width={7} height={15}  />
+                            {/* <UpdateStroryScreen>
                                 <div>Destroy the <span className="text-yellow-500">box</span> to find the keys</div>
                             </UpdateStroryScreen>
-                            <AddMob position={[52,82,81,78,79]} life={5} type="2" /> 
-                            <AddItem name="box_item" position={[96,92]} life={3}>
-                                <AddChildItem name="key_item" important   />
+                            <AddMob position={[52,82,81,78,79]} life={5} type="2" />  */}
+                            <AddItem name="box_item" position={[33,75]} life={2}>
+                                <AddChildItem name="key_item"   />
                             </AddItem>
-                            
+                            <AddItem name='coin_item' position={[46,47,60,61]} skin='coin_item_2' />
+                            <AddWall position={[38,39,40,68,67,66]}/>
+                            <AddBarrier position={[45,52,59]} orientation='VERTICAL' />
+                            <AddTestModel position={[53]} />
                             <AddDoor position={[94]} />
 
                         </>
                     }
                     {AppContext.level.current == 6 &&
                         <>
-                        <SetMapDimension width={7} height={15} addWallOnMap />
-                            <UpdateLevelConfig playerPosition={10} />
+                            <SetMapDimension width={15} height={15}  />
+                            <UpdateLevelConfig playerPosition={37} barrierBattery={2} keyNumber={1} />
                             
-                            <UpdateStroryScreen>
+                            {/* <UpdateStroryScreen>
                                 <div>Get the <span className="text-blue-500">sphere</span> to level up !</div>
-                            </UpdateStroryScreen>
-                            <AddItem name="upgrade_life_item" position={[30]} />
-                            <AddItem name="upgrade_shoot_speed_item" position={[31]} />
-                            <AddItem name="upgrade_shoot_power_item" position={[32]} />
-                            <AddDoor position={[94]} open />
+                            </UpdateStroryScreen> */}
+                            <AddWall position={[145,100,94,139]} />
+                            <AddBarrier position={[90,91,92,93,135,136,137,138]} batteryNeeded={1} orientation='HORIZONTAL' />
+                            <AddBarrier position={[109,124]} batteryNeeded={1} orientation='VERTICAL' />
+
+                            <AddBarrier position={[101,102,103,104,146,147,148,149]} batteryNeeded={2} orientation='HORIZONTAL' />
+                            <AddBarrier position={[130,115]} batteryNeeded={2} orientation='VERTICAL' />
+
+                            <AddDynamicObject position={[159,106]} name = 'battery_item' _dObjectID='01' />
+                            <AddItem position={[72,62]} name='portal_item' _portalID='01' />
+                            <AddItem name='key_item' position={[118]} />
+                            <AddItem name='coin_item' position={[105,107,108,120,121,122,123,119,117,116,134,133,132,131]} skin='coin_item_2' />
+                            <AddDoor position={[187]}  />
 
                         </>
                     }

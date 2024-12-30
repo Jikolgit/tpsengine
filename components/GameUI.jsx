@@ -128,9 +128,17 @@ export function GameController()
                             className='relative w-[50px] h-[50px]
                             ' 
                             >
-                                <div id="GLASS" className="absolute left-[0] top-[0] z-[2] w-full h-full"></div>
-                                <img src='gameButton/up.png' alt="up" className="w-full h-full" />
+                                <div
+                                className={`rounded-[10px] select-none
+                                            cursor-pointer opacity-50
+                                            w-full h-full bg-gray-500 `}
+                                >
+                                    <svg width={50} height={50} fill="none" stroke="#ffffff" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="m18 15-6-6-6 6" />
+                                    </svg>
+                                </div> 
                             </div>
+                             
                             
 
                         </div>
@@ -148,17 +156,38 @@ export function GameController()
                                 ' 
                                 >
                                     <div id="GLASS" className="absolute left-[0] top-[0] z-[2] w-full h-full"></div>
-                                    <img src='gameButton/left.png' alt="left" className="w-full h-full" />
+                                    
+                                    <div
+                                    
+                                    className={`rounded-[10px] opacity-50 
+                                                cursor-pointer select-none
+                                                w-[50px] h-full bg-gray-500 `}
+                                    >
+                                        <svg width={50} height={50} fill="none" stroke="#ffffff" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="m15 18-6-6 6-6" />
+                                        </svg>
+                                    </div> 
                                 </div>
                                 <div id="ACTION BUTTON"
-                            
                                 onTouchStart={()=>{_appContext.touchEventMFunc.current.center()}}
                                 onTouchEnd={()=>{_appContext.touchEventTouchEndFunc.current.center()}}
+                                
                                 className='w-[50px] h-[50px] relative
                                 ' 
                                 >
                                     <div id="GLASS" className="absolute left-[0] top-[0] z-[2] w-full h-full"></div>
-                                    <img  ref={_appContext.actionButtonRef} src={actionIcon} alt="action" className="w-full h-full" />
+                                    <div
+                                    id='BUTTON CENTER'
+                                    
+                                    
+                                    className={`rounded-lg select-none opacity-50
+                                                cursor-pointer flex flex-col justify-center
+                                                w-[50px] h-full bg-gray-500 `}
+                                    >
+                                    <svg className='mx-auto' width={40} height={40} fill="none" stroke="#ffffff" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <rect width={18} height={18} x={3} y={3} rx={2} ry={2} />
+                                    </svg>
+                                    </div>   
                                 </div>
                                 <div id="RIGHT"
                                 onTouchStart={()=>{_appContext.touchEventMFunc.current.right()}}
@@ -167,7 +196,16 @@ export function GameController()
                                 ' 
                                 >
                                     <div id="GLASS" className="absolute left-[0] top-[0] z-[2] w-full h-full"></div>
-                                    <img src='gameButton/right.png' alt="right" className="w-full h-full" />
+                                    <div
+                                    
+                                    className={`rounded-[10px] opacity-50
+                                                cursor-pointer select-none
+                                                w-[50px] h-full bg-gray-500 `}
+                                    >
+                                        <svg width={50} height={50} fill="none" stroke="#ffffff" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="m9 18 6-6-6-6" />
+                                        </svg>
+                                    </div> 
                                 </div>
                         </div>
                         <div
@@ -176,16 +214,18 @@ export function GameController()
                                         flex justify-center z-[2]
                                         absolute bottom-[5px] left-[0] right-[0] mx-auto' 
                         >
-                                <div id="DOWN"
+                                
+                                <div
                                 onTouchStart={()=>{_appContext.touchEventMFunc.current.down()}}
                                 onTouchEnd={()=>{_appContext.touchEventTouchEndFunc.current.down()}}
-                                className='w-[50px] h-[50px] relative
-                                ' 
+                                className={`rounded-lg opacity-50
+                                            cursor-pointer select-none
+                                            w-[50px] h-full bg-gray-500 `}
                                 >
-                                    <div id="GLASS" className="absolute left-[0] top-[0] z-[2] w-full h-full"></div>
-                                    <img src='gameButton/down.png' alt="down" className="w-full h-full" />
-                                </div>
-
+                                    <svg width={50} height={50} fill="none" stroke="#ffffff" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="m6 9 6 6 6-6" />
+                                    </svg>
+                                </div>    
                         </div>
                 </div>
                 }
@@ -248,7 +288,7 @@ export function ActionIcon()
     return(
         <>
             {actionIconVisible &&
-                <div className=" border-[5px] border-gray-500 bg-black w-[60px] h-[60px] absolute z-[2] left-0 right-0 top-[10px] mx-auto ">
+                <div className=" border-[2px] border-gray-500 bg-black w-[30px] h-[30px] absolute z-[2] left-0 right-0 top-[10px] mx-auto ">
                     
                             {actionIcon == 'INTERACT' && <svg fill="none" stroke="#d2d1d1" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 3.75c-.405 0-.777.345-.75.75l.375 10.125a.375.375 0 1 0 .75 0L12.75 4.5c.028-.405-.344-.75-.75-.75Z" />
@@ -272,16 +312,17 @@ export function PauseIcon()
     return(
         <div
             onClick={()=>{_appContext.setPause(true);}}
-            className=" w-[50px] h-[50px]  cursor-pointer z-[2]
-                        absolute bottom-[10px] right-[10px] flex flex-col justify-center"
+            className=" cursor-pointer
+                        w-[50px] h-[50px]
+                        absolute  z-[2]
+                        right-[20px] bottom-[20px]
+                        bg-gray-500 rounded-[10px] p-[5px]
+                        scale-10 select-none
+                        transition-transform duration-[250ms]
+                        hover:scale-90 "
         >
-            <img className="w-full mx-auto " src="btnTemplate.png" alt="PauseButton" />
-            <svg
-                className="block absolute left-[0] right-[0] m-auto top-[0] bottom-[0] w-[40px] h-[40px]   " 
-             fill="none" stroke="#ffffff" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M4 6h16" />
-                <path d="M4 12h16" />
-                <path d="M4 18h16" />
+            <svg width={40} height={40} fill="#ffffff" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path fillRule="evenodd" d="M3.6 6a1.2 1.2 0 0 1 1.2-1.2h14.4a1.2 1.2 0 1 1 0 2.4H4.8A1.2 1.2 0 0 1 3.6 6Zm0 6a1.2 1.2 0 0 1 1.2-1.2h14.4a1.2 1.2 0 1 1 0 2.4H4.8A1.2 1.2 0 0 1 3.6 12Zm0 6a1.2 1.2 0 0 1 1.2-1.2h14.4a1.2 1.2 0 1 1 0 2.4H4.8A1.2 1.2 0 0 1 3.6 18Z" clipRule="evenodd" />
             </svg>
         </div>
     )
@@ -615,7 +656,7 @@ export function TitleScreen()
                      
                      <div className=" flex justify-center text-white ">
                         <div className="text-[0.8rem] mr-[5px] flex flex-col justify-center ">
-                            <img src="coin.svg" alt="coin" className=" w-[20px] h-[20px]  " />
+                            <img src="money2icon.png" alt="coin" className=" w-[25px] h-[25px]  " />
                         </div>
                         <span className="text-[1.2rem]">{coinValue}</span>
                      </div>
@@ -769,7 +810,7 @@ export function PlayerMoney()
                 className="w-[30px] h-[30px] relative "
             >   
                 <div id="GLASS" className="absolute left-[0] top-[0] w-full h-full z-[2] "></div>
-                <img className="w-full h-full " src="coin.svg" alt="Money_Icon" />
+                <img className="w-full h-full " src="money2icon.png" alt="Money_Icon" />
             </div>
             
             <div className="text-[1.4rem] text-white/50 flex flex-col justify-center mx-[5px] ">x</div>

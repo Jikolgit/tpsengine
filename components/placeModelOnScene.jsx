@@ -1,5 +1,5 @@
 import { BoxItem } from "./BoxItem";
-import { Barier_Model, ItemType1Model, ExitDoor_model, ItemType2Model, Decor_model, WallModel, GroundModel, BallPortalModel } from "./Game3DAssets";
+import { Barier_Model, ItemType1Model, ExitDoor_model, ItemType2Model, Decor_model, WallModel, GroundModel, BallPortalModel, TestModel } from "./Game3DAssets";
 import { Mob_2 } from "./mob_2";
 import { Mob_3 } from "./mob_3";
 
@@ -9,7 +9,7 @@ export function placeModelOnScene(gloBalObject)
         {
             
             
-            gloBalObject.platformModelContainer.current[i] = <GroundModel key={i} x={gloBalObject.GameMap[i].xPose} z={gloBalObject.GameMap[i].zPose} />
+            gloBalObject.platformModelContainer.current[i] = <GroundModel controller={{groundController:gloBalObject.mapGroundController,index:i}} key={i} x={gloBalObject.GameMap[i].xPose} z={gloBalObject.GameMap[i].zPose} />
             
 
             if(gloBalObject.GameMap[i].objectType == 'item')
@@ -77,7 +77,12 @@ export function placeModelOnScene(gloBalObject)
             if(gloBalObject.GameMap[i].objectType == 'dynamic_object')
             {
                 let objectComponents=null;
-                if(gloBalObject.GameMap[i].objectDesc.objectName=='bomb_item' || gloBalObject.GameMap[i].objectDesc.objectName=='battery_item')
+                if(gloBalObject.GameMap[i].objectDesc.objectName=='battery_item')
+                {
+                    objectComponents = <ItemType2Model objectName={gloBalObject.GameMap[i].objectDesc.objectName} controller={{itemController:gloBalObject.itemController,index:gloBalObject.GameMap[i].objectId}} 
+                    skin={gloBalObject.GameMap[i].objectDesc.skin} customModel={gloBalObject.GameMap[i].objectDesc.customModel} visible={true} x={gloBalObject.GameMap[i].xPose} z={gloBalObject.GameMap[i].zPose} />
+                }
+                if(gloBalObject.GameMap[i].objectDesc.objectName=='bomb_item')
                 {
                     objectComponents = <ItemType2Model objectName={gloBalObject.GameMap[i].objectDesc.objectName} controller={{itemController:gloBalObject.itemController,index:gloBalObject.GameMap[i].objectId}} 
                     skin={gloBalObject.GameMap[i].objectDesc.skin} timer={gloBalObject.GameMap[i].objectDesc.timer} customModel={gloBalObject.GameMap[i].objectDesc.customModel} visible={true} x={gloBalObject.GameMap[i].xPose} z={gloBalObject.GameMap[i].zPose} />
@@ -106,6 +111,23 @@ export function placeModelOnScene(gloBalObject)
                 >
                 {objectComponents}
                 </group> : null;
+                gloBalObject.objectContainer.current[i] = arrElem;
+                
+            }
+            else if(gloBalObject.GameMap[i].objectType == 'testModel')
+            { 
+                let objectComponents=null;
+                
+                objectComponents = <TestModel controller={{wallController:gloBalObject.wallController,index:gloBalObject.GameMap[i].objectId}} 
+                  x={gloBalObject.GameMap[i].xPose} z={gloBalObject.GameMap[i].zPose} />
+                
+                let arrElem =
+                <group
+                key={i}
+                ref={(val)=>{gloBalObject.objectRef.current[gloBalObject.GameMap[i].objectId] = val}}
+                >
+                {objectComponents}
+                </group>;
                 gloBalObject.objectContainer.current[i] = arrElem;
                 
             }

@@ -21,7 +21,8 @@ export function createObject(map_level,objectType,objectIndexArr,index)
             if(objectType == 'barier')
             {
                 map_level[index].active = true,map_level[index].objectType ='barier', map_level[index].isOnScene = true,
-                map_level[index].objectDesc={objectName:objectIndexArr[i].objectName,mobToKill:objectIndexArr[i].mobToKill,orientation:objectIndexArr[i].orientation,
+                map_level[index].objectDesc={objectName:objectIndexArr[i].objectName,mobToKill:objectIndexArr[i].mobToKill,
+                    batteryNeeded:objectIndexArr[i].batteryNeeded,orientation:objectIndexArr[i].orientation,
                     keyToCollect:objectIndexArr[i].keyToCollect,customModel:objectIndexArr[i].customModel}, map_level[index].object = true;map_level[index].objectId = objectIdValue;
                 objectIdValue ++;
             }
@@ -41,16 +42,32 @@ export function createObject(map_level,objectType,objectIndexArr,index)
             
             else if(objectType == 'dynamic_object')
             {      
-                if(objectIndexArr[i].objectName == 'bomb_item' || objectIndexArr[i].objectName == 'battery_item')
+                if(objectIndexArr[i].objectName == 'battery_item')
                 {
                     map_level[index].active = true,map_level[index].objectType = objectType, map_level[index].isOnScene = true
                     map_level[index].objectDesc ={objectName:objectIndexArr[i].objectName,isImportant:objectIndexArr[i].isImportant,value:objectIndexArr[i].value,
+                        dObjectID:objectIndexArr[i].dObjectID,
                         customModel:objectIndexArr[i].customModel,skin:objectIndexArr[i].skin,canMove:objectIndexArr[i].canMove,counterStart:false,timer:5},map_level[index].object = true,map_level[index].objectId = objectIdValue
                     objectIdValue ++;
                 }
+                if(objectIndexArr[i].objectName == 'bomb_item' )
+                {   
+                    map_level[index].active = true,map_level[index].objectType = objectType, map_level[index].isOnScene = true
+                    map_level[index].objectDesc ={objectName:objectIndexArr[i].objectName,isImportant:objectIndexArr[i].isImportant,value:objectIndexArr[i].value,
+                        dObjectID:objectIndexArr[i].dObjectID,blastArea:objectIndexArr[i].blastArea,activable:objectIndexArr[i].activable,
+                        customModel:objectIndexArr[i].customModel,skin:objectIndexArr[i].skin,canMove:objectIndexArr[i].canMove,counterStart:false,timer:objectIndexArr[i].bombCounter},map_level[index].object = true,map_level[index].objectId = objectIdValue
+                    objectIdValue ++;
+                }
+                
+                
+            }
+            else if(objectType == 'testModel')
+            {      
 
-                
-                
+                map_level[index].active = false,map_level[index].objectType = objectType, map_level[index].isOnScene = false
+                map_level[index].objectDesc ={objectName:objectIndexArr[i].objectName},map_level[index].object = false,map_level[index].objectId = objectIdValue
+                objectIdValue ++;
+ 
             }
             else if(objectType == 'item')
             {   
@@ -78,7 +95,7 @@ export function createObject(map_level,objectType,objectIndexArr,index)
                 else if(objectIndexArr[i].objectName == 'portal_item')
                 {
                     map_level[index].active = true,map_level[index].objectType = objectType, map_level[index].isOnScene = true
-                    map_level[index].primaryObject = 'portal_item'
+                    map_level[index].primaryObject = {name:'portal_item',portalID:objectIndexArr[i].portalID,objectId:objectIdValue}
                     map_level[index].objectDesc ={objectName:objectIndexArr[i].objectName,portalType:objectIndexArr[i].type,skin:objectIndexArr[i].skin},map_level[index].object = true,map_level[index].objectId = objectIdValue
                     objectIdValue ++;
                 }

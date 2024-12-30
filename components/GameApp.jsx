@@ -52,6 +52,7 @@ export function GameApp(props)
     let bulletGroupRef = useRef(null);
     let itemController = {value:[]};
     let wallController = {value:[]};
+    let mapGroundController = useRef([]);
     let exitDoorController = {value:[]};
     let bulletModelController = {value:[]};
     let exitDoorModelIndexArr = {value:[]};
@@ -59,7 +60,7 @@ export function GameApp(props)
     let mobIndexArr = {value:[]};
     let barierMapIndexArr = {value:[]};
     let barierModelIndexArr = {value:[]};
-    let objectCanMove = useRef({active:false,index:null,objInfo:null,effectAfterMove:'none'});
+    let objectCanMove = useRef({active:false,index:null,objInfo:null,effectAfterMove:'none',portalModelID:null});
     let movableObjectIndexArr = {value:[]};
     let playerCanShoot = true;
     // let playerCanShoot = _appContext.level.current == 1? false : true;
@@ -82,27 +83,71 @@ export function GameApp(props)
 
     let checkWinCondition = ()=>
         {
-
+            let totalwincondition = 0;
+           
+            if(gameMapInfo._KeyNumber != 0){totalwincondition++}
+            if(gameMapInfo._MobToKillNumber != 0){totalwincondition++}
+            if(gameMapInfo._battery != 0){totalwincondition++}
+            
             // IF _KeyNumber > 0 PLAYER MUST COLLECT ALL THE KEY IN THE AREA BEFORE GOING TO THE NEXT LEVEL
-            if(gameMapInfo._KeyNumber != 0)
-            {   
-                console.log(_appContext.playerStats.current.keyCollected+' et '+gameMapInfo._KeyNumber)
-                if(_appContext.playerStats.current.keyCollected == gameMapInfo._KeyNumber )
-                {
-                    openExitDoor();
-                }
+            
+            // console.log(totalwincondition)
+            if(totalwincondition>0)
+            {       
+                    if(gameMapInfo._KeyNumber != 0)
+                    {   
+                        
+                        if(_appContext.playerStats.current.keyCollected == gameMapInfo._KeyNumber )
+                        {   
+                            totalwincondition --
+                            gameMapInfo._KeyNumber=0
+                            // console.log(_appContext.playerStats.current.keyCollected)
+                        }
+        
+                    }
+                    if(gameMapInfo._MobToKillNumber != 0)
+                    {   
+                        
+                        if(_appContext.playerStats.current.importantMobKilled == gameMapInfo._MobToKillNumber )
+                        {   
+                            totalwincondition --
+                            gameMapInfo._MobToKillNumber = 0
+                        }
+        
+                    }
+                    if(gameMapInfo._battery != 0)
+                    {   
+                        
+                        if(_appContext.playerStats.current.batteryPlaced == gameMapInfo._battery )
+                        { 
+                            totalwincondition --
+                            gameMapInfo._battery = 0;
+                            
+                        }
+        
+                    }
 
-            }
-            else
-            {
-                // PLAYER MUST KILL ALL THE MOB IN THE AREA BEFORE GOING TO THE NEXT LEVEL
-                if(_appContext.playerStats.current.importantMobKilled == gameMapInfo._MobToKillNumber )
+                    if(totalwincondition == 0)
                     {
-                      
                         openExitDoor();
-
                     }
             }
+            removeBarier();
+            // if(gameMapInfo.barrierBattery !=0 && _appContext.playerStats.current.batteryPlaced == gameMapInfo.barrierBattery )
+            // {       
+            //     removeBarier();
+                
+            // }
+            // else
+            // {
+            //     // PLAYER MUST KILL ALL THE MOB IN THE AREA BEFORE GOING TO THE NEXT LEVEL
+            //     if(_appContext.playerStats.current.importantMobKilled == gameMapInfo._MobToKillNumber )
+            //         {
+                      
+            //             openExitDoor();
+
+            //         }
+            // }
         }
     let checkBarierCondition = ()=>
         {
@@ -142,7 +187,21 @@ export function GameApp(props)
             }
             
         }
+    let removeBarier = ()=>
+        {
+            for(let i =0; i< barierMapIndexArr.value.length;i++)
+                {
+                    if(GameMap[barierMapIndexArr.value[i]].isOnScene && GameMap[barierMapIndexArr.value[i]].objectDesc.batteryNeeded == _appContext.playerStats.current.batteryPlaced)
+                    {
+                        GameMap[barierMapIndexArr.value[i]].isOnScene = false;
+                        GameMap[barierMapIndexArr.value[i]].object = false;
+                        barierModelIndexArr.value[i].modelController("hide")
+                    }
 
+                    
+                    
+                }
+        }
     let openExitDoor = ()=>
         {
             for(let i = 0; i< exitDoorController.value.length;i++)
@@ -179,12 +238,17 @@ export function GameApp(props)
             
            
         }
-
+    let managePlayerBattery = ()=>
+        {
+            _appContext.playerStats.current.batteryPlaced ++;
+            
+            checkWinCondition();
+        }
     let managePlayerKey = ()=>
         {
             _appContext.playerStats.current.keyCollected ++;
-            console.log(_appContext.playerStats.current.keyCollected)
-            checkBarierCondition();
+            
+            // checkBarierCondition();
             checkWinCondition();
         }
     let reducePlayerLife = (_number)=>
@@ -277,11 +341,22 @@ export function GameApp(props)
             bulletModelController.value[_index]('HIDE-BULLET')
             prepareNextBullet(gloBalObject);
         }
-    let checkPlatform = (elem)=>
+    let checkCurrentPlayerPlatform = (elem)=>
         {
             return elem.xPose == playerPositionOnMap.x && elem.zPose == playerPositionOnMap.z
         }
-
+    let takeObjectOnPlayerPosition = ()=>
+        {
+            let result = GameMap.find(checkCurrentPlayerPlatform);
+            
+            if(result.object)
+            {
+                if(result.objectDesc.objectName == 'coin_item')
+                {
+                    takeCoinOnPlayerPoition(result);
+                }
+            }
+        }
     let getNextPlatformInfo = (_playerDirection,_when)=>
         {
 
@@ -292,7 +367,7 @@ export function GameApp(props)
                 if(_playerDirection.value == 'BACK'){playerPositionOnMap.z -= (playerDistanceTarget.value);}
 
 
-                let result = GameMap.find(checkPlatform);
+                let result = GameMap.find(checkCurrentPlayerPlatform);
 
                 if(_playerDirection.value == 'LEFT'){playerPositionOnMap.x -= (playerDistanceTarget.value);}
                 if(_playerDirection.value == 'RIGHT'){playerPositionOnMap.x += (playerDistanceTarget.value);}
@@ -324,16 +399,19 @@ export function GameApp(props)
                             {  
                                 setActionButtonEffect('TAKE-UPGRADE',result)
                             }
-                            else if(result.objectDesc.objectName=='bomb_item')
-                            {
-                                setActionButtonEffect('bomb',result)
-                            }
+                            
 
                         }
-                        
                         else if(result.objectType=='Exitdoor')
                         {
                             setActionButtonEffect('Exit',result)
+                        }
+                        else if(result.object && result.objectType=='dynamic_object')
+                        {
+                            if(result.objectDesc.objectName=='bomb_item' && result.objectDesc.activable)
+                            {   
+                                setActionButtonEffect('bomb',result)
+                            }
                         }
                         else
                         {
@@ -605,6 +683,139 @@ export function GameApp(props)
                 
             }
         }
+    let takeCoinOnPlayerPoition = (obj)=>
+        {
+            AudioManage.play('coin')
+
+            if(obj.objectDesc.isImportant){managePlayerKey()}
+            obj.object = false;
+            obj.isOnScene = false;
+
+            if(obj.objectDesc.fromMob)
+            {
+                managePlayerMoney(obj.objectDesc.objectValue,'add')
+                mobUpdateFunc.current[obj.objectId]('Remove-Object',"none");
+            }
+            else
+            {
+                if(obj.objectDesc.hasChildObject)
+                {
+                    managePlayerMoney(obj.objectDesc.childObjectValue,'add')
+                }
+                else
+                {
+                    managePlayerMoney(obj.objectDesc.value,'add')
+                }
+                
+                itemController.value[obj.objectId]('REMOVE-ITEM')
+            }
+
+            getNextPlatformInfo(playerDirection,'AfterMove');
+        }
+    let takeCoin = ()=>
+        {
+            AudioManage.play('coin')
+
+            if(currentObjectInFront.objectInfo.objectDesc.isImportant){managePlayerKey()}
+            currentObjectInFront.objectInfo.object = false;
+            currentObjectInFront.objectInfo.isOnScene = false;
+
+            if(currentObjectInFront.objectInfo.objectDesc.fromMob)
+            {
+                managePlayerMoney(currentObjectInFront.objectInfo.objectDesc.objectValue,'add')
+                mobUpdateFunc.current[currentObjectInFront.objectInfo.objectId]('Remove-Object',"none");
+            }
+            else
+            {
+                if(currentObjectInFront.objectInfo.objectDesc.hasChildObject)
+                {
+                    managePlayerMoney(currentObjectInFront.objectInfo.objectDesc.childObjectValue,'add')
+                }
+                else
+                {
+                    managePlayerMoney(currentObjectInFront.objectInfo.objectDesc.value,'add')
+                }
+                
+                itemController.value[currentObjectInFront.objectInfo.objectId]('REMOVE-ITEM')
+            }
+
+            getNextPlatformInfo(playerDirection,'AfterMove');
+        }
+    let checkBlastArea = (obj)=>
+        {
+            let blastAreaObj = []
+            for(let i = 0;i<obj.objectDesc.blastArea+1;i++)
+            {   
+                if(i == 0)
+                {
+                    for(let i1 = 0;i1<obj.objectDesc.blastArea;i1++)
+                    {
+                        let areaL = GameMap.find((elem)=>{return elem.id == obj.id+(i1+1)});
+                        let areaR = GameMap.find((elem)=>{return elem.id == obj.id-(i1+1)});
+                        if(areaL && areaL.zPose == obj.zPose){blastAreaObj.push( areaL)}
+                        if(areaR && areaR.zPose == obj.zPose){blastAreaObj.push( areaR)}
+                    }
+                }
+                else
+                {
+                    for(let i2 = 0;i2<obj.objectDesc.blastArea+1;i2++)
+                    {
+                        if(i2 == 0)
+                        {
+                            let areaF =  GameMap.find((elem)=>{return elem.id == obj.id+(_appContext.mapWidth.current*(i))})
+                            let areaB =  GameMap.find((elem)=>{return elem.id == obj.id-(_appContext.mapWidth.current*(i))})
+                            if(areaF){blastAreaObj.push( areaF) }
+                            if(areaB){blastAreaObj.push( areaB) }
+                        }
+                        else
+                        {
+                            for(let i3 = 0;i3<obj.objectDesc.blastArea;i3++)
+                            {
+                                let centralAreaF = GameMap.find((elem)=>{return elem.id == obj.id+(_appContext.mapWidth.current*(i))});
+                                let centralAreaB = GameMap.find((elem)=>{return elem.id == obj.id-(_appContext.mapWidth.current*(i))});
+                                let areaFL = GameMap.find((elem)=>{return elem.id == obj.id+(_appContext.mapWidth.current*(i))+(i3+1)})
+                                let areaFR = GameMap.find((elem)=>{return elem.id == obj.id+(_appContext.mapWidth.current*(i))-(i3+1)})
+                                let areaBL = GameMap.find((elem)=>{return elem.id == obj.id-(_appContext.mapWidth.current*(i))+(i3+1)})
+                                let areaBR = GameMap.find((elem)=>{return elem.id == obj.id-(_appContext.mapWidth.current*(i))-(i3+1)})
+
+                                if(centralAreaF)
+                                {
+                                    if(areaFL && areaFL.zPose == centralAreaF.zPose){blastAreaObj.push( areaFL)}
+                                    if(areaFR && areaFR.zPose == centralAreaF.zPose){blastAreaObj.push( areaFR)}
+                                }
+
+                                if(centralAreaB)
+                                {
+                                    if(areaBL && areaBL.zPose == centralAreaB.zPose){blastAreaObj.push( areaBL)}
+                                    if(areaBR && areaBR.zPose == centralAreaB.zPose){blastAreaObj.push( areaBR)}
+                                }
+
+                            }
+
+                        }
+
+                    }
+                }
+
+            }
+           
+            for(let i=0;i<blastAreaObj.length;i++)
+            {
+                mapGroundController.current[blastAreaObj[i].id]()
+                if(blastAreaObj[i].object)
+                {
+                    if(blastAreaObj[i].objectType=="dynamic_object")
+                    {
+                        if(blastAreaObj[i].objectDesc.objectName=="bomb_item")
+                        {   
+                            itemController.value[blastAreaObj[i].objectId]('BOMB-DIRECT-EXPLOSION',blastAreaObj[i])
+                        }
+                    }
+                }
+            } 
+                   
+
+        }
     let playerMovePressedEventHandler = (touchPressed)=>
     {
         if(!aKeyisPressed.current && !playerMoveIsActive.current && !camRotateStart.current
@@ -844,32 +1055,7 @@ export function GameApp(props)
                             }
                             else if (currentObjectInFront.effect == 'CAURIS')
                             {
-                                AudioManage.play('coin')
-
-                                if(currentObjectInFront.objectInfo.objectDesc.isImportant){managePlayerKey()}
-                                currentObjectInFront.objectInfo.object = false;
-                                currentObjectInFront.objectInfo.isOnScene = false;
-
-                                if(currentObjectInFront.objectInfo.objectDesc.fromMob)
-                                {
-                                    managePlayerMoney(currentObjectInFront.objectInfo.objectDesc.objectValue,'add')
-                                    mobUpdateFunc.current[currentObjectInFront.objectInfo.objectId]('Remove-Object',"none");
-                                }
-                                else
-                                {
-                                    if(currentObjectInFront.objectInfo.objectDesc.hasChildObject)
-                                    {
-                                        managePlayerMoney(currentObjectInFront.objectInfo.objectDesc.childObjectValue,'add')
-                                    }
-                                    else
-                                    {
-                                        managePlayerMoney(currentObjectInFront.objectInfo.objectDesc.value,'add')
-                                    }
-                                    
-                                    itemController.value[currentObjectInFront.objectInfo.objectId]('REMOVE-ITEM')
-                                }
-
-                                getNextPlatformInfo(playerDirection,'AfterMove');
+                                // takeCoin();
 
                             }
                             else if (currentObjectInFront.effect == 'KEY')
@@ -1032,6 +1218,7 @@ export function GameApp(props)
             prepareNextBullet(gloBalObject);
             _appContext.playerStats.current.keyCollected = 0
             _appContext.playerStats.current.mobKilled = 0
+            _appContext.playerStats.current.batteryPlaced = 0
             _appContext.playerMoneyContainerRef.current.innerText = _appContext.playerStats.current.coinCollected;
             let playerMovePressedEventHandlerCallB = (evt)=>
             {
@@ -1076,14 +1263,15 @@ export function GameApp(props)
             gloBalObject,bulletSpeed,nextBulletToShoot,bulletPositionOnMap,mobUpdateFunc,checkWinCondition,objectContainer,exitDoorMapIndexArr,
             barierMapIndexArr,mobIndexArr,_appContext,spearScale,barierModelIndexArr,level,exitDoorVisible,itemController,
             wallController,exitDoorController,showWeapon3DModel,bulletModelController,platformModelContainer,wallModelContainer,mobObjectIdArr,
-            checkBarierCondition,movableObjectIndexArr,objectCanMove,managePlayerKey
+            checkBarierCondition,movableObjectIndexArr,objectCanMove,managePlayerKey,managePlayerBattery,checkCurrentPlayerPlatform,takeObjectOnPlayerPosition,
+            mapGroundController
 
             }
         placeModelOnScene(gloBalObject)
 
     return <>
                 <gameAppContext.Provider
-                    value={{GameMap,objectCanMove,playerPositionOnMap,playerMoveIsActive,enemyLifePoint,reducePlayerLife,mobUpdateFunc,mobObjectIdArr,barierModelIndexArr,exitDoorModelIndexArr}}
+                    value={{mapGroundController,GameMap,checkBlastArea,objectCanMove,playerPositionOnMap,playerMoveIsActive,enemyLifePoint,reducePlayerLife,mobUpdateFunc,mobObjectIdArr,barierModelIndexArr,exitDoorModelIndexArr}}
                 >
 
                         {_appContext.devMode.current?

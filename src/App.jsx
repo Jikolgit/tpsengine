@@ -57,7 +57,7 @@ function App() {
   let playerLifeUpgradeCost = useRef({value:20,level:1});
   let playerWeaponUpgradeCost = useRef({value:20,level:1});
   let playerStats = useRef({bulletModel:'default',score:0,life:5,maxLife:5,moveSpeed:0.1,shootInterval:20,shootPower:1,batteryPlaced:0,keyCollected:0,mobKilled:0,importantMobKilled:0,coinCollected:0,showWeapon:false});
-  let levelInfo = useRef({mapTexture:'alientxt.jpg',battery:0,_KeyNumber:0,_MobToKillNumber:0,timerSecond:0,timerMinute:0,fogColor:'#000000',fogNear:3,fogFar:20,finalLevel:false});
+  let levelInfo = useRef({mapTexture:'alientxt.jpg',totalwincondition:0,barrierBattery:0,winConditionCompletion:0,_battery:0,_KeyNumber:0,_MobToKillNumber:0,timerSecond:0,timerMinute:0,fogColor:'#000000',fogNear:3,fogFar:20,finalLevel:false});
   let saveDataOrder = useRef([level.current,playerStats.current.coinCollected,playerStats.current.score,playerStats.current.life,playerStats.current.maxLife,
     playerStats.current.shootInterval,playerStats.current.shootPower,playerLifeUpgradeCost.current.value,playerLifeUpgradeCost.current.level,
     playerWeaponUpgradeCost.current.value,playerWeaponUpgradeCost.current.level])
@@ -180,8 +180,18 @@ function App() {
 
         
       }
+  let resetLevelInfo = ()=>
+    {
+      levelInfo.current.totalwincondition = 0;
+      levelInfo.current.barrierBattery = 0;
+      levelInfo.current.winConditionCompletion = 0;
+      levelInfo.current._battery = 0;
+      levelInfo.current._KeyNumber = 0;
+      levelInfo.current._MobToKillNumber = 0;
+    }
   let nextLevel = ()=>
       {
+        resetLevelInfo()
         storyText.value = ['none']
         level.current ++;
         if(!transitionBetweenScreen.current){ setGameVueActive(c => c = false);}
@@ -193,6 +203,7 @@ function App() {
       }
   let setGameOver = ()=>
       {
+        resetLevelInfo()
         GameUIController.current({arg1:'SWITCH-TO',arg2:'GAME_OVER-SCREEN'});
         gamePause.current = true;
         AudioManage.playAmbient('stop')
@@ -200,6 +211,7 @@ function App() {
 
   let quitGame = (args)=>
     {
+      resetLevelInfo()
       AudioManage.play('click');
       AudioManage.playAmbient('stop')
 

@@ -1,4 +1,5 @@
     uniform float utime;
+    uniform vec3 portalCol;
     varying vec2 vUv;
 
       void main() {
@@ -13,7 +14,7 @@
         else
         {
             // transparent = 1.0;
-            finalCol = mix(vec4(0.0,0.0,1.0,0.0),vec4(1.0,0.0,0.0,1.0),col*5.0);
+            finalCol = mix(vec4(0.0,0.0,1.0,0.0),vec4(portalCol,1.0),col*5.0);
         }
         
         gl_FragColor.rgba = vec4(finalCol);

@@ -105,9 +105,10 @@ if(objArg.objectCanMove.current.active)
     effectAfterMoveFinished(objArg);
 }
 objArg.objectCanMove.current.active = false;
-
 objArg.objectCanMove.current.index = null;
 objArg.objectCanMove.current.objInfo = null;
+
+objArg.takeObjectOnPlayerPosition()
 // getCurrentPlatformInfo();
 // objArg._appContext.mobCallBackAfterPlayerMove.current();
 for(let i = 0; i<objArg.mobObjectIdArr.value.length;i++ )
@@ -181,24 +182,42 @@ function updateObjectPositionOnMap(objArg,objectInfo)
         if(objArg.directionToGo.value == 'LEFT'){nextPlatformPose = {x:objectInfo.xPose+ objArg.playerDistanceTarget.value,z:objectInfo.zPose} }
         if(objArg.directionToGo.value == 'RIGHT'){nextPlatformPose = {x:objectInfo.xPose- objArg.playerDistanceTarget.value,z:objectInfo.zPose} }
         
+       
         let getNextPlatform = (elem)=>
         {
             return elem.xPose == nextPlatformPose.x && elem.zPose == nextPlatformPose.z
         }
         findNextPlatform = objArg.GameMap.find(getNextPlatform);
+        if(objArg.GameMap[findNextPlatform.id]?.primaryObject)
+        {   
+            objArg.objectCanMove.current.portalModelID = objArg.GameMap[findNextPlatform.id].primaryObject.objectId;
+            
+        }
 
         objArg.GameMap[findNextPlatform.id].object = true
         objArg.GameMap[findNextPlatform.id].isOnScene = true
         objArg.GameMap[findNextPlatform.id].objectType = structuredClone(objArg.GameMap[currentObjectPlatformIndex].objectType)
         objArg.GameMap[findNextPlatform.id].objectId = structuredClone(objArg.GameMap[currentObjectPlatformIndex].objectId)
         objArg.GameMap[findNextPlatform.id].objectDesc = structuredClone(objArg.GameMap[currentObjectPlatformIndex].objectDesc);
-        
-        if(objArg.GameMap[findNextPlatform.id].primaryObject == 'portal_item' && objectInfo.objectDesc.objectName=='battery_item')
+        // console.log(objectInfo.objectDesc.objectName)
+        if(objArg.GameMap[findNextPlatform.id]?.primaryObject)
         {
-            objArg.GameMap[findNextPlatform.id].objectDesc.canMove = false;
-            objArg.objectCanMove.current.effectAfterMove = 'PLACE-BATTERY'
-            
+                if(objArg.GameMap[findNextPlatform.id].primaryObject.name == 'portal_item' && objectInfo.objectDesc.objectName=='battery_item')
+                {       
+                    if(objArg.GameMap[findNextPlatform.id].primaryObject.portalID == objectInfo.objectDesc.dObjectID )
+                    {
+                        objArg.GameMap[findNextPlatform.id].objectDesc.canMove = false;
+                        objArg.objectCanMove.current.effectAfterMove = 'PLACE-BATTERY'
+                    }
+        
+                    
+                }
+                else
+                {
+                    console.log('non')
+                }
         }
+
 
         objArg.GameMap[currentObjectPlatformIndex].object = false
         objArg.GameMap[currentObjectPlatformIndex].isOnScene = false
@@ -253,7 +272,8 @@ function effectAfterMoveFinished(objArg)
 {   
     if(objArg.objectCanMove.current.effectAfterMove == 'PLACE-BATTERY')
     {   
-        objArg.managePlayerKey();
+        objArg.itemController.value[objArg.objectCanMove.current.portalModelID]('BLUE')   
+        objArg.managePlayerBattery();
         objArg.objectCanMove.current.effectAfterMove = 'none'
     }
     
@@ -357,7 +377,8 @@ function checkifElemCanMoveNextPlatform(objArg)
                                                         objArg.objectCanMove.current.active = true;
                                                         objArg.objectCanMove.current.objInfo = _result;
                                                         objArg.objectCanMove.current.index = _result.objectId;
-                                                        if(_result.objectDesc.objectName == 'bomb_item')
+                                                        
+                                                        if(_result.objectDesc.objectName == 'bomb_item' && _result.objectDesc.skin == 'bomb_item_1')
                                                         {
                                                             objArg.itemController.value[_result.objectId]('ROLL-BOMB',objArg.moveDirection.value)
                                                         }
@@ -367,7 +388,7 @@ function checkifElemCanMoveNextPlatform(objArg)
                                                     }
                                                     else
                                                     {
-                                                        if(_result.objectDesc.objectName == 'bomb_item')
+                                                        if(_result.objectDesc.objectName == 'bomb_item' && _result.objectDesc.skin == 'bomb_item_1')
                                                         {
                                                             objArg.itemController.value[_result.objectId]('ROLL-STOP',null) 
                                                         }
@@ -377,10 +398,14 @@ function checkifElemCanMoveNextPlatform(objArg)
                                                 }
                                                 else
                                                 {
-                                                    return false
+                                                    return false;
                                                 }
                                                 
                                                 
+                                            }
+                                            else if(_result.objectDesc.objectName == 'coin_item')
+                                            {
+                                                return true;
                                             }
                                             else if(_result.objectDesc.objectName == 'portal_item')
                                             {
@@ -406,7 +431,7 @@ function checkifElemCanMoveNextPlatform(objArg)
                                                         objArg.objectCanMove.current.active = true;
                                                         objArg.objectCanMove.current.objInfo = _result;
                                                         objArg.objectCanMove.current.index = _result.objectId;
-                                                        if(_result.objectDesc.objectName == 'bomb_item')
+                                                        if(_result.objectDesc.objectName == 'bomb_item' && _result.objectDesc.skin == 'bomb_item_1')
                                                         {
                                                             objArg.itemController.value[_result.objectId]('ROLL-BOMB',objArg.moveDirection.value)
                                                         }
@@ -416,7 +441,7 @@ function checkifElemCanMoveNextPlatform(objArg)
                                                     }
                                                     else
                                                     {
-                                                        if(_result.objectDesc.objectName == 'bomb_item')
+                                                        if(_result.objectDesc.objectName == 'bomb_item' && _result.objectDesc.skin == 'bomb_item_1')
                                                         {
                                                             objArg.itemController.value[_result.objectId]('ROLL-STOP',null) 
                                                         }

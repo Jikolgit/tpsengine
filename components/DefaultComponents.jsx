@@ -8,17 +8,18 @@ import { storyText } from "./gameStory";
 
 /**
  * 
- * @param {{mapTexture:string,mobToKill:number,keyNumber:number,batteryToPlace:number,finalLevel:boolean,playerPosition:number,fog:boolean}} param0 
+ * @param {{mapTexture:string,mobToKill:number,keyNumber:number,batteryToPlace:number,barrierBattery:number,finalLevel:boolean,playerPosition:number,fog:boolean}} param0 
  * @returns 
  */
-export function UpdateLevelConfig({mapTexture,mobToKill,batteryToPlace,keyNumber,finalLevel,playerPosition,fog})
+export function UpdateLevelConfig({mapTexture,mobToKill,batteryToPlace,barrierBattery,keyNumber,finalLevel,playerPosition,fog})
 {
   const AppCntext = useContext(appContext);
-  AppCntext.levelInfo.current.battery = batteryToPlace? batteryToPlace : 0;
+  AppCntext.levelInfo.current._battery = batteryToPlace? batteryToPlace : 0;
   AppCntext.levelInfo.current._MobToKillNumber = mobToKill? mobToKill : 0;
   AppCntext.levelInfo.current._KeyNumber = keyNumber? keyNumber : 0;
   AppCntext.levelInfo.current.finalLevel = finalLevel? finalLevel : false;
   AppCntext.levelInfo.current.mapTexture = mapTexture? mapTexture : 'ntxt4.jpg';
+  AppCntext.levelInfo.current.barrierBattery = barrierBattery? barrierBattery : 0;
   if(fog)
   {
     AppCntext.levelInfo.current.fogNear = 3
@@ -61,10 +62,10 @@ export function UpdatePlayerStat({moveSpeed,life,maxLife,shootInterval,shootPowe
 
 /**
  * 
- * @param {{position:number[],name:string,value:number|null,_canMove:boolean,_type:string,important:boolean,life:number,customModel:JSX.Element,skin:string}} param0 
+ * @param {{position:number[],name:string,value:number|null,_portalID:string,_canMove:boolean,_type:string,important:boolean,life:number,customModel:JSX.Element,skin:string}} param0 
  * @returns 
  */
-export function AddItem({position,name,value,_canMove,_type,important,life,children,customModel,skin})
+export function AddItem({position,name,value,_canMove,_portalID,_type,important,life,children,customModel,skin})
 {
   const AppCntext = useContext(appContext);
   let hasChildObject = false;
@@ -90,13 +91,9 @@ export function AddItem({position,name,value,_canMove,_type,important,life,child
     {
       objectDetailArr[i] = {position:position[i],objectName:name,skin:skin?skin:'bomb_item_1',value:value?value:1,canMove:_canMove?_canMove:false,isImportant:important?important:false,customModel:customModel?customModel:'none'}
     }
-    else if(name == 'battery_item')
-    {
-      objectDetailArr[i] = {position:position[i],objectName:name,skin:skin?skin:'battery_item_1',value:value?value:1,canMove:_canMove?_canMove:false,isImportant:important?important:false,customModel:customModel?customModel:'none'}
-    }
     else if(name == 'portal_item')
     {
-      objectDetailArr[i] = {position:position[i],objectName:name,skin:skin?skin:'portal_item_1',type:_type,customModel:customModel?customModel:'none'}
+      objectDetailArr[i] = {position:position[i],objectName:name,portalID:_portalID?_portalID:'none',skin:skin?skin:'portal_item_1',type:_type,customModel:customModel?customModel:'none'}
     }
     else if(name == 'box_item')
     {
@@ -185,22 +182,23 @@ export function AddItem({position,name,value,_canMove,_type,important,life,child
 }
 /**
  * 
- * @param {{position:number[],name:string,_canMove:boolean,customModel:JSX.Element,skin:string}} param0 
+ * @param {{position:number[],name:string,_canMove:boolean,_activable:boolean,_blastArea:number,_bombCounter:number,customModel:JSX.Element,skin:string,_dObjectID:string}} param0 
  * @returns 
  */
-export function AddDynamicObject({position,name,_canMove,customModel,skin})
+export function AddDynamicObject({position,name,_bombCounter,_activable,_blastArea,_canMove,customModel,skin,_dObjectID})
 {
   const AppCntext = useContext(appContext);
   let objectDetailArr = [];
   for(let i = 0;i<position.length;i++)
   {
       if(name == 'bomb_item')
-      {
-        objectDetailArr[i] = {position:position[i],objectName:name,skin:skin?skin:'bomb_item_1',canMove:_canMove?_canMove:true,customModel:customModel?customModel:'none'}
+      { 
+        objectDetailArr[i] = {position:position[i],activable:_activable?true:(_activable === false?false:true),blastArea:_blastArea?_blastArea:1,bombCounter:_bombCounter?_bombCounter:5,objectName:name,skin:skin?skin:'bomb_item_1',dObjectID:_dObjectID?_dObjectID:'01',canMove:_canMove?_canMove:true,customModel:customModel?customModel:'none'}
+        
       }
       else if(name == 'battery_item')
       {
-        objectDetailArr[i] = {position:position[i],objectName:name,skin:skin?skin:'battery_item_1',canMove:_canMove?_canMove:true,customModel:customModel?customModel:'none'}
+        objectDetailArr[i] = {position:position[i],objectName:name,skin:skin?skin:'battery_item_1',dObjectID:_dObjectID?_dObjectID:'01',canMove:_canMove?_canMove:true,customModel:customModel?customModel:'none'}
       }
   }
 
@@ -444,10 +442,10 @@ export function SetMapDimension({width,height,addWallOnMap})
 
 /**
  * 
- * @param {{position:number[],mobToKill:number,keyToCollect:number,orientation:string,customModel:JSX.Element}} param0 
+ * @param {{position:number[],mobToKill:number,keyToCollect:number,batteryNeeded:number,orientation:string,customModel:JSX.Element}} param0 
  * @returns 
  */
-export function AddBarrier({position,orientation,mobToKill,keyToCollect,customModel})
+export function AddBarrier({position,orientation,mobToKill,batteryNeeded,keyToCollect,customModel})
 {
   let _appContext = useContext(appContext)
   let objectDetailArr = []
@@ -455,8 +453,8 @@ export function AddBarrier({position,orientation,mobToKill,keyToCollect,customMo
   for(let i = 0;i<position.length;i++)
   {
 
-      objectDetailArr[i] = {position:position[i],objectName:'barier',skin:'barier_1',mobToKill:mobToKill?mobToKill:(mobToKill==0?0:1),
-        keyToCollect:keyToCollect?keyToCollect:0,orientation:orientation?orientation:'FRONT',customModel:customModel?customModel:'none'}
+      objectDetailArr[i] = {position:position[i],objectName:'barier',batteryNeeded:batteryNeeded?batteryNeeded:1,skin:'barier_1',mobToKill:mobToKill?mobToKill:(mobToKill==0?0:1),
+        keyToCollect:keyToCollect?keyToCollect:0,orientation:orientation?orientation:'HORIZONTAL',customModel:customModel?customModel:'none'}
     
   }
   for(let i =0;i<(_appContext.mapWidth.current*_appContext.mapHeight.current);i++)
@@ -479,5 +477,28 @@ export function Set3DModel({name,children})
     _appContext.healItemModel.current = children
   }
   return null
+}
+
+/**
+ * 
+ * @param {{position:number[],mobToKill:number,keyToCollect:number,orientation:string,customModel:JSX.Element}} param0 
+ * @returns 
+ */
+export function AddTestModel({position})
+{
+  let _appContext = useContext(appContext)
+  let objectDetailArr = []
+
+  for(let i = 0;i<position.length;i++)
+  {
+
+      objectDetailArr[i] = {position:position[i],objectName:'testModel'}
+    
+  }
+  for(let i =0;i<(_appContext.mapWidth.current*_appContext.mapHeight.current);i++)
+  {   
+      createObject(_appContext.gameMap.current,'testModel',objectDetailArr,i);
+  }
+  return null;
 }
 

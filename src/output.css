@@ -578,16 +578,16 @@ video {
   bottom: 0px;
 }
 
-.bottom-\[0\] {
-  bottom: 0;
-}
-
 .bottom-\[10px\] {
   bottom: 10px;
 }
 
 .bottom-\[145px\] {
   bottom: 145px;
+}
+
+.bottom-\[20px\] {
+  bottom: 20px;
 }
 
 .bottom-\[5px\] {
@@ -779,10 +779,6 @@ video {
   height: 50px;
 }
 
-.h-\[60px\] {
-  height: 60px;
-}
-
 .h-\[80\%\] {
   height: 80%;
 }
@@ -809,6 +805,10 @@ video {
 
 .w-\[20px\] {
   width: 20px;
+}
+
+.w-\[25px\] {
+  width: 25px;
 }
 
 .w-\[30px\] {
@@ -917,16 +917,16 @@ video {
   justify-content: space-between;
 }
 
+.rounded-\[10px\] {
+  border-radius: 10px;
+}
+
 .rounded-lg {
   border-radius: 0.5rem;
 }
 
 .border-\[2px\] {
   border-width: 2px;
-}
-
-.border-\[5px\] {
-  border-width: 5px;
 }
 
 .border-black {
@@ -979,6 +979,10 @@ video {
 
 .p-\[10px\] {
   padding: 10px;
+}
+
+.p-\[5px\] {
+  padding: 5px;
 }
 
 .py-\[10px\] {
@@ -1087,6 +1091,10 @@ video {
   opacity: 1;
 }
 
+.opacity-50 {
+  opacity: 0.5;
+}
+
 .shadow-\[inset_0_0_0_0px_rgba\(0\2c 0\2c 0\2c 0\.3\)\] {
   --tw-shadow: inset 0 0 0 0px rgba(0,0,0,0.3);
   --tw-shadow-colored: inset 0 0 0 0px var(--tw-shadow-color);
@@ -1145,6 +1153,12 @@ video {
   font-family: 'gunplay';
 
   src: url(../public/gunplayrg.otf);
+}
+
+.hover\:scale-90:hover {
+  --tw-scale-x: .9;
+  --tw-scale-y: .9;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
 .hover\:scale-\[1\.1\]:hover {
