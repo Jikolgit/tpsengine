@@ -345,7 +345,9 @@ export function PauseScreen()
                     <ButtonTemplate1 title={'RESUME'} btnfunction={()=>{_appContext.setPause(false)}} />
             </div>
             <div className="mt-[20px] flex justify-center ">
-                    <ButtonTemplate1 title={'QUIT'} btnfunction={()=>{_appContext.quitGame('NO-RESTART') ;AudioManage.play('click');AudioManage.playAmbient('stop')}} />
+                    <ButtonTemplate1 title={'QUIT'} btnfunction={()=>{_appContext.quitGame('NO-RESTART') ;AudioManage.play('click');
+                        // AudioManage.playAmbient('stop')
+                    }} />
             </div>
            
             

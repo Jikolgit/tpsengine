@@ -172,7 +172,7 @@ function App() {
       {
         
         AudioManage.play('click');
-        AudioManage.playAmbient('play');
+        // AudioManage.playAmbient('play');
         actualGameScreen.current = 'LOADING-SCREEN'
         GameUIController.current({arg1:'SWITCH-TO',arg2:'LOADING-SCREEN'});
         
@@ -206,14 +206,14 @@ function App() {
         resetLevelInfo()
         GameUIController.current({arg1:'SWITCH-TO',arg2:'GAME_OVER-SCREEN'});
         gamePause.current = true;
-        AudioManage.playAmbient('stop')
+        // AudioManage.playAmbient('stop')
       }
 
   let quitGame = (args)=>
     {
       resetLevelInfo()
       AudioManage.play('click');
-      AudioManage.playAmbient('stop')
+      // AudioManage.playAmbient('stop')
 
       playerStats.current.life =  structuredClone(playerStats.current.maxLife);
       playerStats.current.keyCollected = 0
@@ -245,7 +245,7 @@ function App() {
     {  
         AudioManage.play('click')
         systemPause(state)
-        AudioManage.playAmbient(state?'pause':'play');
+        // AudioManage.playAmbient(state?'pause':'play');
         actualGameScreen.current = state? 'PAUSE-SCREEN' : 'GAME-SCREEN';
         GameUIController.current({arg1:'DIRECT',arg2:state?'PAUSE-SCREEN':'NO-SCREEN'})
 
@@ -265,7 +265,7 @@ function App() {
             if(actualGameScreen.current == 'GAME-SCREEN')
             {
               
-              AudioManage.playAmbient('pause');
+              // AudioManage.playAmbient('pause');
               systemPause(true)
               actualGameScreen.current = gamePause.current? 'PAUSE-SCREEN' : 'GAME-SCREEN';
               PauseScreenController.current();

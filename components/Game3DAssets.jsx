@@ -20,6 +20,7 @@ import portal2frags from './shaders/portal2frag.glsl'
 import doorvertex from './shaders/doorVertex.glsl'
 import doorfrags from './shaders/doorfrag.glsl'
 import { createContext } from 'react';
+import { AudioManage } from './audioComponents';
 
 export const MobModelContext = createContext();
 function prepareTexture(texture)
@@ -397,6 +398,7 @@ export function ItemType2Model(props) {
               }
             let _explodeAnimation = new CustomCounter(1,0,bombExplosion,null);
             params.object = false;
+            AudioManage.play('bombExplode')
             _explodeAnimation.start();
           }
           else if(args == 'START-BOMB-COUNTER')
@@ -409,9 +411,16 @@ export function ItemType2Model(props) {
               let bombCounterCallBack = ()=>
                 {
                  
-                  if(itemGroupRef.current.children[1].text == 1){explodeAnimation.start();params.object = false; return true;}
+                  if(itemGroupRef.current.children[1].text == 1)
+                    {
+                      explodeAnimation.start();
+                      AudioManage.play('bombExplode');
+                      params.object = false; 
+                      return true;
+                    }
                   else
                   {
+                    AudioManage.play('bombCounter')
                     itemGroupRef.current.children[1].text --;
                     
                     return false;
