@@ -14,7 +14,7 @@ export let appContext = createContext(null)
 function App() {
 
   let devMode = useRef(false);
-  let level = useRef(2);
+  let level = useRef(1);
   let mapHeight = useRef(19);
   let mapWidth = useRef(16);
   let playerPosition = useRef(5);
@@ -340,7 +340,7 @@ function App() {
             {gameVueActive && <GameTimer />}
             {gameVueActive && <ScoreVue />} 
             {/* {gameVueActive && <BulletReloadIcon /> } */}
-            {/* {gameVueActive && <LevelUi />}  */}
+            {gameVueActive && <LevelUi />} 
             {gameVueActive && <LifeBar /> }
 
             <GameUI />

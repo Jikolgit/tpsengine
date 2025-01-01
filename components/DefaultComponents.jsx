@@ -93,7 +93,7 @@ export function AddItem({position,name,value,_canMove,_portalID,_type,important,
     }
     else if(name == 'portal_item')
     {
-      objectDetailArr[i] = {position:position[i],objectName:name,portalID:_portalID?_portalID:'none',skin:skin?skin:'portal_item_1',type:_type,customModel:customModel?customModel:'none'}
+      objectDetailArr[i] = {position:position[i],objectName:name,portalID:_portalID?_portalID:'01',skin:skin?skin:'portal_item_1',type:_type,customModel:customModel?customModel:'none'}
     }
     else if(name == 'box_item')
     {

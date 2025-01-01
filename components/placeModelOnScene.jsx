@@ -85,7 +85,7 @@ export function placeModelOnScene(gloBalObject)
                 if(gloBalObject.GameMap[i].objectDesc.objectName=='bomb_item')
                 {
                     objectComponents = <ItemType2Model objectName={gloBalObject.GameMap[i].objectDesc.objectName} controller={{itemController:gloBalObject.itemController,index:gloBalObject.GameMap[i].objectId}} 
-                    skin={gloBalObject.GameMap[i].objectDesc.skin} timer={gloBalObject.GameMap[i].objectDesc.timer} customModel={gloBalObject.GameMap[i].objectDesc.customModel} visible={true} x={gloBalObject.GameMap[i].xPose} z={gloBalObject.GameMap[i].zPose} />
+                    skin={gloBalObject.GameMap[i].objectDesc.skin} activable={gloBalObject.GameMap[i].objectDesc.activable} timer={gloBalObject.GameMap[i].objectDesc.timer} customModel={gloBalObject.GameMap[i].objectDesc.customModel} visible={true} x={gloBalObject.GameMap[i].xPose} z={gloBalObject.GameMap[i].zPose} />
                 }
                 let arrElem = gloBalObject.GameMap[i].isOnScene?
                 <group

@@ -339,7 +339,7 @@ function checkifElemCanMoveNextPlatform(objArg)
                                         }
                                         else if(_result.objectType == 'wall')
                                         {
-                                            if(_result.objectType == 'wall' && !_result.objectDesc.destructible)
+                                            if(_result.objectType == 'wall' && _result.object )
                                             {
                                                 return false
                                             } 

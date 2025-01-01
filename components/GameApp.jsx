@@ -811,6 +811,17 @@ export function GameApp(props)
                             itemController.value[blastAreaObj[i].objectId]('BOMB-DIRECT-EXPLOSION',blastAreaObj[i])
                         }
                     }
+                    if(blastAreaObj[i].objectType=="wall")
+                    {
+                        if(blastAreaObj[i].objectDesc.destructible)
+                        {
+                            blastAreaObj[i].object = false;
+                            blastAreaObj[i].isOnScene = false;
+                            // console.log(wallController.value[blastAreaObj[i].objectId])
+                            wallController.value[blastAreaObj[i].objectId]('REMOVE-WALL')
+                        }
+                       
+                    }
                 }
             } 
                    

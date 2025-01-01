@@ -244,29 +244,30 @@ function checkifBulletCanMoveNextPlatform(bulletIndex,direction,gloBalObject)
                                     }
                                     else if(result.objectType == "wall")
                                     {   
-                                            if(result.objectDesc.destructible)
-                                            {   AudioManage.play('hit')
-                                                if(result.objectDesc.life > 1)
-                                                    {
-                                                        result.objectDesc.life --;
-                                                        // gloBalObject.mobUpdateFunc.current[result.objectId]('Update-Mob-Life',result.objectDesc.life);
-                                                    }
-                                                    else
-                                                    {   
-                                                        result.objectDesc.life --;
-                                                        result.objectDesc.haswall = false;
-                                                        gloBalObject.wallController.value[result.objectId]('REMOVE-WALL');
+                                            // if(result.objectDesc.destructible)
+                                            // {   AudioManage.play('hit')
+                                            //     if(result.objectDesc.life > 1)
+                                            //         {
+                                            //             result.objectDesc.life --;
+                                            //             // gloBalObject.mobUpdateFunc.current[result.objectId]('Update-Mob-Life',result.objectDesc.life);
+                                            //         }
+                                            //         else
+                                            //         {   
+                                            //             result.objectDesc.life --;
+                                            //             result.objectDesc.haswall = false;
+                                            //             gloBalObject.wallController.value[result.objectId]('REMOVE-WALL');
                                                         
        
-                                                        gloBalObject.checkWinCondition();
-                                                    }
+                                            //             gloBalObject.checkWinCondition();
+                                            //         }
                                                     
-                                                    return "move-stop-explode";
-                                            }
-                                            else
-                                            {
-                                                return "move-stop-none"
-                                            }
+                                            //         return "move-stop-explode";
+                                            // }
+                                            // else
+                                            // {
+                                            //     return "move-stop-none"
+                                            // }
+                                            return "move-stop-none"
                                     }
                                     else 
                                     {   

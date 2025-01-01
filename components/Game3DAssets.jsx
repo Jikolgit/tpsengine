@@ -121,15 +121,32 @@ export function GroundModel(props) {
   let _appContext = useContext(appContext)
   const { nodes, materials } = useGLTF('/model.glb');
   let _texture = prepareTexture('alientxt.jpg');
- 
+  let colorRemove = 0;
+  let startColorRemove = false;
   let mat = new THREE.MeshBasicMaterial({map:_texture,wireframe:false});
   let mat2 = new THREE.MeshBasicMaterial({color:'red',wireframe:true});
 
   props.controller.groundController.current[props.controller.index] = (args)=>
   {
     mat.color=new THREE.Color(1,0,0)
+    startColorRemove = true
   }
-  useEffect(()=>{},[]);
+  useFrame(()=>
+  {
+      if(startColorRemove)
+      {
+        if(colorRemove <= 1)
+        {
+          colorRemove += 1/200;
+          mat.color=new THREE.Color(1,colorRemove,colorRemove)
+        }
+        else
+        {
+          startColorRemove = false
+        }
+        
+      }
+  })
   return (
     <group {...props} dispose={null}>
       <mesh geometry={nodes.planeGround.geometry} material={mat} position={[props.x, 0, props.z]} />
@@ -526,8 +543,9 @@ export function ItemType2Model(props) {
                             
                             <mesh ref={itemRef} name="bombmodel1" geometry={nodes.gazModel1.geometry} material={new THREE.MeshMatcapMaterial({color:'gray'})} position={[0,0,0]}>
                             </mesh>
+                            
                             <Text
-                                
+                                visible={props.activable? true:false}
                                 characters='1234567890'
                                 fontSize={0.8} fontWeight={700}
                                 rotation={[0,-(Math.PI),0]}
@@ -538,7 +556,7 @@ export function ItemType2Model(props) {
                             <mesh visible={false} scale={1} position={[0,0.5,0]}>
                                   <sphereGeometry args={[0.9,20,20]} />
                                   <meshBasicMaterial color={'red'} />
-                            </mesh>
+                            </mesh> 
                       
             </>}  
           {props.skin == "battery_item_1" && <>
