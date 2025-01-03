@@ -3,7 +3,7 @@ import { useFrame } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { createContext, useContext, useEffect, useRef } from "react";
 import {  PlayerCursor, BulletModel, PlayerDirection } from "./Game3DAssets";
-import { appContext } from "../src/App";
+import { appContext } from "../App";
 import { PlatformIndex } from "./DevHelp";
 import { movePlayer,preparePlayerMove,rotateCam } from './playerController';
 import { moveBullet, prepareNextBullet } from './bulletController';
@@ -17,7 +17,7 @@ export function GameApp(props)
 {
 
     let _appContext = useContext(appContext);
-    let level = useRef(_appContext.level.current);
+    // let level = useRef(_appContext.gameState.current.level);
     const GameMap =  _appContext.gameMap.current;
     let gameMapInfo = _appContext.levelInfo.current; //WIN CONDITION
     let moveDirection={value:'none'};
@@ -29,7 +29,7 @@ export function GameApp(props)
     let playerDistance = {value:0};
     let playerDistanceTarget = {value:2};
     let enemyLifePoint = {value:1};
-    let playerPoseVar = {x:structuredClone(GameMap[_appContext.playerPosition.current].xPose),y:0.8,z:structuredClone(GameMap[_appContext.playerPosition.current].zPose)};
+    let playerPoseVar = {x:structuredClone(GameMap[_appContext.gameState.current.playerPosition].xPose),y:0.8,z:structuredClone(GameMap[_appContext.gameState.current.playerPosition].zPose)};
     let playerPositionOnMap = {x:playerPoseVar.x,y:0,z:playerPoseVar.z}
     let bulletPositionOnMap = [];
     let camRotateStart = useRef(false);
@@ -63,7 +63,7 @@ export function GameApp(props)
     let objectCanMove = useRef({active:false,index:null,objInfo:null,effectAfterMove:'none',portalModelID:null});
     let movableObjectIndexArr = {value:[]};
     let playerCanShoot = true;
-    // let playerCanShoot = _appContext.level.current == 1? false : true;
+    // let playerCanShoot = _appContext.gameState.current.level == 1? false : true;
     let currentObjectInFront={effect:'none',objectInfo:null};
     let passedTime = 0;
     let walkEffectTimer = {value:0};
@@ -1028,7 +1028,7 @@ export function GameApp(props)
                                 else
                                 {
                                    
-                                    if(_appContext.level.current == 1){_appContext.gameNotifFunc.current('Récuperez la lance pour avancer','player');}
+                                    if(_appContext.gameState.current.level == 1){_appContext.gameNotifFunc.current('Récuperez la lance pour avancer','player');}
                                     else{_appContext.gameNotifFunc.current('Closed !','player');}
 
                                 }
@@ -1131,7 +1131,7 @@ export function GameApp(props)
                                 objectRef.current[currentObjectInFront.objectInfo.objectId].children[0].visible = false;
                                 getNextPlatformInfo(playerDirection,'AfterMove');
 
-                                if(_appContext.level.current == 1)
+                                if(_appContext.gameState.current.level == 1)
                                 {
                                     playerCanShoot = true;
                                     bulletGroupRef.current.visible = true
@@ -1272,7 +1272,7 @@ export function GameApp(props)
             playerMoveIsActive,getNextPlatformInfo,playerDirection,aKeyisPressed,objetDirection,GameMap,playerPositionOnMap,
             directionToGo,camRotateInfo,camRotateStart,weaponReload,resetBullet,getCurrentBulletPlatform,objectRef,exitDoorModelIndexArr,
             gloBalObject,bulletSpeed,nextBulletToShoot,bulletPositionOnMap,mobUpdateFunc,checkWinCondition,objectContainer,exitDoorMapIndexArr,
-            barierMapIndexArr,mobIndexArr,_appContext,spearScale,barierModelIndexArr,level,exitDoorVisible,itemController,
+            barierMapIndexArr,mobIndexArr,_appContext,spearScale,barierModelIndexArr,exitDoorVisible,itemController,
             wallController,exitDoorController,showWeapon3DModel,bulletModelController,platformModelContainer,wallModelContainer,mobObjectIdArr,
             checkBarierCondition,movableObjectIndexArr,objectCanMove,managePlayerKey,managePlayerBattery,checkCurrentPlayerPlatform,takeObjectOnPlayerPosition,
             mapGroundController

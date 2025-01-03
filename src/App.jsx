@@ -1,24 +1,28 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
-import { GameApp } from '../components/GameApp'
-import { createLevel } from '../components/gameMap'
+import { GameApp } from './components/GameApp'
+import { createLevel } from './components/gameMap'
 import { Canvas } from '@react-three/fiber';
-import {  GameController,  GameNotif,   GameUI, LifeBar,  PauseIcon,  ActionIcon, PlayerMoney,    ScreenHalo, GameTimer, ScoreVue, LevelUi, BulletReloadIcon } from '../components/GameUI';
-import { AudioManage } from '../components/audioComponents';
-import { decryptData, deleteCookie, encryptData, getCookieFunc } from '../components/utils';
+import {  GameController,  GameNotif,   GameUI, LifeBar,  PauseIcon,  ActionIcon, PlayerMoney,    ScreenHalo, GameTimer, ScoreVue, LevelUi, BulletReloadIcon } from './components/GameUI';
+import { AudioManage } from './components/audioComponents';
+import { decryptData, deleteCookie, encryptData, getCookieFunc } from './components/utils';
 
-import { Settings } from '../components/Setting';
-import { storyText } from '../components/gameStory';
+import { Settings } from './components/Setting';
+import { storyText } from './components/gameStory';
 
 
 export let appContext = createContext(null)
 function App() {
 
   let devMode = useRef(false);
-  let level = useRef(1);
-  let mapHeight = useRef(19);
-  let mapWidth = useRef(16);
+  let gameState = useRef(
+    {
+      level:1,
+      mapWidth:19,
+      mapHeight:16,
+      playerPosition:5,
+    })
   let playerPosition = useRef(5);
-  let gameMap = useRef(createLevel(level.current,mapWidth.current,mapHeight.current));
+  let gameMap = useRef(createLevel(gameState.current.level,gameState.current.mapWidth,gameState.current.mapHeight));
   let playerLifeContainerRef = useRef(null);
   let playerMoneyContainerRef = useRef(null);
   let lifeBarFunc = useRef(null);
@@ -58,7 +62,7 @@ function App() {
   let playerWeaponUpgradeCost = useRef({value:20,level:1});
   let playerStats = useRef({bulletModel:'default',score:0,life:5,maxLife:5,moveSpeed:0.1,shootInterval:20,shootPower:1,batteryPlaced:0,keyCollected:0,mobKilled:0,importantMobKilled:0,coinCollected:0,showWeapon:false});
   let levelInfo = useRef({mapTexture:'alientxt.jpg',totalwincondition:0,barrierBattery:0,winConditionCompletion:0,_battery:0,_KeyNumber:0,_MobToKillNumber:0,timerSecond:0,timerMinute:0,fogColor:'#000000',fogNear:3,fogFar:20,finalLevel:false});
-  let saveDataOrder = useRef([level.current,playerStats.current.coinCollected,playerStats.current.score,playerStats.current.life,playerStats.current.maxLife,
+  let saveDataOrder = useRef([gameState.current.level,playerStats.current.coinCollected,playerStats.current.score,playerStats.current.life,playerStats.current.maxLife,
     playerStats.current.shootInterval,playerStats.current.shootPower,playerLifeUpgradeCost.current.value,playerLifeUpgradeCost.current.level,
     playerWeaponUpgradeCost.current.value,playerWeaponUpgradeCost.current.level])
 
@@ -66,7 +70,7 @@ function App() {
   let saveGame = ()=>
     {
 
-      saveDataOrder.current = [level.current,playerStats.current.coinCollected,playerStats.current.score,playerStats.current.life,playerStats.current.maxLife,
+      saveDataOrder.current = [gameState.current.level,playerStats.current.coinCollected,playerStats.current.score,playerStats.current.life,playerStats.current.maxLife,
         playerStats.current.shootInterval,playerStats.current.shootPower,playerLifeUpgradeCost.current.value,playerLifeUpgradeCost.current.level,
         playerWeaponUpgradeCost.current.value,playerWeaponUpgradeCost.current.level]
       let dataToSave='';
@@ -82,7 +86,7 @@ function App() {
   let deleteGameSave = ()=>
     {
       deleteCookie('TPS_SAVE')
-      level.current = 1;
+      gameState.current.level = 1;
       playerStats.current = {bulletModel:'default',score:0,life:5,maxLife:5,moveSpeed:0.1,shootInterval:50,shootPower:1,keyCollected:0,mobKilled:0,importantMobKilled:0,coinCollected:0,showWeapon:false}
     }
   let findGameSave = ()=>
@@ -115,7 +119,7 @@ function App() {
         }
 
         
-        level.current = parseInt(saveDataOrder.current[0]) ;
+        gameState.current.level = parseInt(saveDataOrder.current[0]) ;
         playerStats.current.coinCollected = parseInt(saveDataOrder.current[1]) ;
         playerStats.current.score = parseInt(saveDataOrder.current[2]) ;
         playerStats.current.life =  parseInt(saveDataOrder.current[3]) ;
@@ -193,7 +197,7 @@ function App() {
       {
         resetLevelInfo()
         storyText.value = ['none']
-        level.current ++;
+        gameState.current.level ++;
         if(!transitionBetweenScreen.current){ setGameVueActive(c => c = false);}
         actualGameScreen.current = 'LOADING-SCREEN'
         GameUIController.current({arg1:'SWITCH-TO',arg2:'LOADING-SCREEN'});
@@ -220,11 +224,11 @@ function App() {
       playerStats.current.mobKilled = 0
       if(args == 'RESTART-GAME-OVER')
       {
-        level.current = 1;
+        gameState.current.level = 1;
       }
       else if(args == 'RESTART-GAME-FINISHED')
       {
-        level.current = 1;
+        gameState.current.level = 1;
       }
       else if(args == 'NO-RESTART')
       {
@@ -308,20 +312,20 @@ function App() {
       findGameSave();
     
     useEffect(() => {
-
+      
       document.addEventListener('visibilitychange',manageVisibility,true)
       return()=>{document.removeEventListener('visibilitychange',manageVisibility,true)}
     }, []);
   return (
     <>
       <appContext.Provider
-        value={{playerLifeContainerRef,playerMoneyContainerRef,touchEventMFunc,playerStats,devMode,gamePause,PauseScreenController,setPause,HelpScreenFunc,
+        value={{gameState,playerLifeContainerRef,playerMoneyContainerRef,touchEventMFunc,playerStats,devMode,gamePause,PauseScreenController,setPause,HelpScreenFunc,
                 actualGameScreen,gameControllerFunc,gameControllerVisible,setScreen,quitGame,gameOverScreenFunc,setGameOver,gameEndingScreenFunc,
-                touchEventTouchEndFunc,actionButtonRef,level,GameLoadingScreenRef,nextLevel,gameMap,levelInfo,lifeBarFunc,gameNotifFunc,
+                touchEventTouchEndFunc,actionButtonRef,GameLoadingScreenRef,nextLevel,gameMap,levelInfo,lifeBarFunc,gameNotifFunc,
                 soundOn,StoryScreenController,startGame,KeyBoardManageStory,systemPause,backMenu,appController,gameUIVueActive,setGameUIVueActive,
-                GameUIController,setGameVueActive,mapWidth,mapHeight,actionIconVisible,actionIconController,ScreenHaloCOntroller,toggleActionIcon,
+                GameUIController,setGameVueActive,actionIconVisible,actionIconController,ScreenHaloCOntroller,toggleActionIcon,
                 BlackScreenTransitionController,transitionBetweenScreen,ScoreVueController,playerLifeUpgradeCost,playerWeaponUpgradeCost,upgradePlayerState,
-                playerPosition,setMapWall,mobCallBackAfterPlayerMove,healItemModel,BulletReloadIconController,deleteGameSave}}
+                setMapWall,mobCallBackAfterPlayerMove,healItemModel,BulletReloadIconController,deleteGameSave}}
       >
           <div 
              

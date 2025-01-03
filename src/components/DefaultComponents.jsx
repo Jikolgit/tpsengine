@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef } from "react";
-import { appContext } from "../src/App";
+import { appContext } from "../App";
 import { createLevel, createObject } from "./gameMap";
 import { storyText } from "./gameStory";
 
@@ -30,7 +30,7 @@ export function UpdateLevelConfig({mapTexture,mobToKill,batteryToPlace,barrierBa
     AppCntext.levelInfo.current.fogNear = 0.1
     AppCntext.levelInfo.current.fogFar = 0
   }
-  AppCntext.playerPosition.current = playerPosition?playerPosition : 0;
+  AppCntext.gameState.current.playerPosition = playerPosition?playerPosition : 0;
   
   return null
 }
@@ -173,7 +173,7 @@ export function AddItem({position,name,value,_canMove,_portalID,_type,important,
       objectDetailArr[i] = {position:position[i],objectName:name,value:0,skin:skin?skin:'upgrade_life_item',customModel:customModel?customModel:'none',isImportant:false}
     }
   }
-  for(let i =0;i<(AppCntext.mapWidth.current*AppCntext.mapHeight.current);i++)
+  for(let i =0;i<(AppCntext.gameState.current.mapWidth*AppCntext.gameState.current.mapHeight);i++)
   {   
       createObject(AppCntext.gameMap.current,'item',objectDetailArr,i);
       
@@ -202,7 +202,7 @@ export function AddDynamicObject({position,name,_bombCounter,_activable,_blastAr
       }
   }
 
-  for(let i =0;i<(AppCntext.mapWidth.current*AppCntext.mapHeight.current);i++)
+  for(let i =0;i<(AppCntext.gameState.current.mapWidth*AppCntext.gameState.current.mapHeight);i++)
   {   
       createObject(AppCntext.gameMap.current,'dynamic_object',objectDetailArr,i);
       
@@ -223,7 +223,7 @@ export function AddDecor({position,skin,customModel})
   {
     objectDetailArr[i] = {position:position[i],skin:skin,customModel:customModel?customModel:'none'}
   }
-  for(let i =0;i<(AppCntext.mapWidth.current*AppCntext.mapHeight.current);i++)
+  for(let i =0;i<(AppCntext.gameState.current.mapWidth*AppCntext.gameState.current.mapHeight);i++)
   {   
             createObject(AppCntext.gameMap.current,'decor',objectDetailArr,i);
   }
@@ -243,7 +243,7 @@ export function AddDoor({position,open})
   {
     objectDetailArr[i] = {open:open?open:false,position:position[i]}
   }
-  for(let i =0;i<(AppCntext.mapWidth.current*AppCntext.mapHeight.current);i++)
+  for(let i =0;i<(AppCntext.gameState.current.mapWidth*AppCntext.gameState.current.mapHeight);i++)
   {   
             createObject(AppCntext.gameMap.current,'Exitdoor',objectDetailArr,i);
   }
@@ -328,7 +328,7 @@ export function AddMob({life,position,children,important,type,difficulty,mobCust
     objectDetailArr[i] = {position:position[i],difficulty,life:lifeProps,mobType:mobType,mobSkin:'dummy',hasObject:hasObject,fromMob:true,isImportant:important?important:false,
                           objectValue,objectPosition,objectSkin,objectIsImportant,_bulletCustomModel,_mobCustomModel,_itemCustomModel}
   }
-  for(let i =0;i<(AppCntext.mapWidth.current*AppCntext.mapHeight.current);i++)
+  for(let i =0;i<(AppCntext.gameState.current.mapWidth*AppCntext.gameState.current.mapHeight);i++)
   {   
             createObject(AppCntext.gameMap.current,'mob',objectDetailArr,i);
   }
@@ -360,7 +360,7 @@ export function AddWall({position,destructible,life})
       objectDetailArr[i] = {position:position[i],objectName:'Wall_type_1',skin:'wall_1',destructible:destructible?destructible:false,life:life?life:0,isImportant:false}
     
   }
-  for(let i =0;i<(AppCntext.mapWidth.current*AppCntext.mapHeight.current);i++)
+  for(let i =0;i<(AppCntext.gameState.current.mapWidth*AppCntext.gameState.current.mapHeight);i++)
   {   
       createObject(AppCntext.gameMap.current,'wall',objectDetailArr,i);
       
@@ -428,15 +428,15 @@ export function AddTimer({minute,second})
 export function SetMapDimension({width,height,addWallOnMap})
 {
   let _appContext = useContext(appContext)
-  _appContext.mapWidth.current = width? width : 16;
-  _appContext.mapWidth.current = _appContext.mapWidth.current > 0? _appContext.mapWidth.current : 16;
+  _appContext.gameState.current.mapWidth = width? width : 16;
+  _appContext.gameState.current.mapWidth = _appContext.gameState.current.mapWidth > 0? _appContext.gameState.current.mapWidth : 16;
 
-  _appContext.mapHeight.current = height? height : 19;
-  _appContext.mapHeight.current = _appContext.mapHeight.current > 0? _appContext.mapHeight.current : 19;
+  _appContext.gameState.current.mapHeight = height? height : 19;
+  _appContext.gameState.current.mapHeight = _appContext.gameState.current.mapHeight > 0? _appContext.gameState.current.mapHeight : 19;
 
   _appContext.setMapWall.current = addWallOnMap? addWallOnMap : false;
 
-  _appContext.gameMap.current = createLevel(_appContext.level.current,_appContext.mapWidth.current,_appContext.mapHeight.current)
+  _appContext.gameMap.current = createLevel(_appContext.gameState.current.level,_appContext.gameState.current.mapWidth,_appContext.gameState.current.mapHeight)
   return null
 }
 
@@ -457,7 +457,7 @@ export function AddBarrier({position,orientation,mobToKill,batteryNeeded,keyToCo
         keyToCollect:keyToCollect?keyToCollect:0,orientation:orientation?orientation:'HORIZONTAL',customModel:customModel?customModel:'none'}
     
   }
-  for(let i =0;i<(_appContext.mapWidth.current*_appContext.mapHeight.current);i++)
+  for(let i =0;i<(_appContext.gameState.current.mapWidth*_appContext.gameState.current.mapHeight);i++)
   {   
       createObject(_appContext.gameMap.current,'barier',objectDetailArr,i);
   }
@@ -495,7 +495,7 @@ export function AddTestModel({position})
       objectDetailArr[i] = {position:position[i],objectName:'testModel'}
     
   }
-  for(let i =0;i<(_appContext.mapWidth.current*_appContext.mapHeight.current);i++)
+  for(let i =0;i<(_appContext.gameState.current.mapWidth*_appContext.gameState.current.mapHeight);i++)
   {   
       createObject(_appContext.gameMap.current,'testModel',objectDetailArr,i);
   }

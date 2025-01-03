@@ -7,7 +7,7 @@ import * as THREE from 'three';
 import React, { useContext, useEffect, useMemo, useRef } from 'react';
 import { Point, Points, Text, useAnimations, useGLTF, useTexture } from '@react-three/drei';
 import { useFrame, useGraph } from '@react-three/fiber';
-import { appContext } from '../src/App';
+import { appContext } from '../App';
 import { mobContext } from './mob_2';
 import { gameAppContext } from './GameApp';
 import { CustomCounter } from './utils';

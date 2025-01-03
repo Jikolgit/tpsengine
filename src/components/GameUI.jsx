@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react"
-import { appContext } from "../src/App"
+import { appContext } from "../App"
 import { Html } from "@react-three/drei"
 import { mobContext } from "./mob_2"
 import { gameAppContext } from "./GameApp"
@@ -1018,7 +1018,7 @@ export function StoryScreen()
                 }
                 else if(state=='update')
                 {
-                    speech.current = speech.current[_appContext.level.current-1];
+                    speech.current = speech.current[_appContext.gameState.current.level-1];
                     speechTotalPart.current = speech.current.length;
                     speechPartCounter.current = 1;
                     setSpeechPartToShow(speech.current[speechPartCounter.current-1]);
@@ -1219,7 +1219,7 @@ export function LevelUi(props)
             <>
                 {_visible &&
                     <div className="text-white text-[1.5rem] absolute z-[2] right-[20px] top-[40px] ">
-                    Level : {_appContext.level.current}
+                    Level : {_appContext.gameState.current.level}
                     </div>
                 }
             </>  

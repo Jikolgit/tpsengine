@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { useContext, useRef } from "react";
-import { appContext } from "../src/App";
+import { appContext } from "../App";
 import { AddDecor, AddDoor, AddItem, AddMob, AddChildItem, SetMapDimension, UpdateLevelConfig, AddWall, AddBarrier, UpdateStroryScreen, UpdatePlayerStat, AddDynamicObject, AddTestModel } from "./DefaultComponents";
 import { MobModelContext } from './Game3DAssets';
 
@@ -34,7 +34,7 @@ export function Settings()
 
     return(
             <>
-                    {AppContext.level.current == 1 &&
+                    {AppContext.gameState.current.level == 1 &&
                         <>
                             <UpdateLevelConfig playerPosition={3} keyNumber={1}   />
 
@@ -54,7 +54,7 @@ export function Settings()
                             <AddDoor position={[59]}  />
                         </>
                     }
-                    {AppContext.level.current == 2 &&
+                    {AppContext.gameState.current.level == 2 &&
                         <>
                             <UpdateLevelConfig playerPosition={10} batteryToPlace={2}  />
                            
@@ -71,7 +71,7 @@ export function Settings()
                             <AddDoor position={[94]} />
                         </>
                     }
-                    {AppContext.level.current == 3 &&
+                    {AppContext.gameState.current.level == 3 &&
                         <>
                             <UpdateLevelConfig playerPosition={4} keyNumber={2} />
                             <SetMapDimension width={8} height={15}  />
@@ -89,7 +89,7 @@ export function Settings()
                             <AddDoor position={[107]} />
                         </>
                     }
-                    {AppContext.level.current == 4 &&
+                    {AppContext.gameState.current.level == 4 &&
                         <> 
                             <UpdateLevelConfig playerPosition={59} keyNumber={1}  />
                             <SetMapDimension width={18} height={20} addWallOnMap />
@@ -114,7 +114,7 @@ export function Settings()
                             <AddDoor position={[278]} />
                         </>
                     }
-                    {AppContext.level.current == 5 &&
+                    {AppContext.gameState.current.level == 5 &&
                         <>
                             <UpdateLevelConfig playerPosition={10} keyNumber={2}  />
                             <SetMapDimension width={7} height={15}  />
@@ -132,7 +132,7 @@ export function Settings()
 
                         </>
                     }
-                    {AppContext.level.current == 6 &&
+                    {AppContext.gameState.current.level == 6 &&
                         <>
                             <SetMapDimension width={11} height={15} addWallOnMap  />
                             <UpdateLevelConfig playerPosition={16} keyNumber={1} />
@@ -145,7 +145,7 @@ export function Settings()
                             <AddDoor position={[137]} />
                         </>
                     }
-                    {/* {AppContext.level.current == 6 &&
+                    {/* {AppContext.gameState.current.level == 6 &&
                         <>
                             <SetMapDimension width={15} height={15}  />
                             <UpdateLevelConfig playerPosition={37} barrierBattery={2} keyNumber={1} />
@@ -165,7 +165,7 @@ export function Settings()
 
                         </>
                     } */}
-                    {AppContext.level.current == 7 &&
+                    {AppContext.gameState.current.level == 7 &&
                         <>
                             <SetMapDimension width={11} height={11}  />
                             <UpdateLevelConfig playerPosition={16} keyNumber={2} />
@@ -194,7 +194,7 @@ export function Settings()
 
                         </>
                     }
-                    {AppContext.level.current == 8 &&
+                    {AppContext.gameState.current.level == 8 &&
                         <>
                             <UpdateLevelConfig playerPosition={22} keyNumber={1}  />
                             <SetMapDimension width={15} height={14} addWallOnMap />
@@ -215,7 +215,7 @@ export function Settings()
                             <AddDoor position={[142]} />
                         </>
                     }
-                    {AppContext.level.current == 9 &&
+                    {AppContext.gameState.current.level == 9 &&
                         <>
                             <UpdateLevelConfig playerPosition={22} mobToKill={2} fog />
                             <SetMapDimension width={15} height={15} addWallOnMap />
@@ -223,7 +223,7 @@ export function Settings()
                         </>
                     }
 
-                    {AppContext.level.current == 10 &&
+                    {AppContext.gameState.current.level == 10 &&
                         <>
                             <UpdateLevelConfig playerPosition={47} mobToKill={4} fog />
                             <SetMapDimension width={25} height={25} addWallOnMap />
@@ -240,7 +240,7 @@ export function Settings()
                             <AddDoor position={[581]} />
                         </>
                     }
-                    {AppContext.level.current == 11 &&
+                    {AppContext.gameState.current.level == 11 &&
                         <>
                             <UpdateLevelConfig playerPosition={29} keyNumber={2} fog />
                             <SetMapDimension width={20} height={15} addWallOnMap />
@@ -264,7 +264,7 @@ export function Settings()
                             <AddDoor position={[269]} />
                         </>
                     }
-                    {AppContext.level.current == 12 &&
+                    {AppContext.gameState.current.level == 12 &&
                         <>
                             <UpdateLevelConfig playerPosition={30} keyNumber={1} fog />
                             <SetMapDimension width={20} height={20} addWallOnMap />
@@ -282,7 +282,7 @@ export function Settings()
                             <AddDoor position={[364]} />
                         </>
                     }
-                    {AppContext.level.current == 13 &&
+                    {AppContext.gameState.current.level == 13 &&
                         <>
                             <UpdateLevelConfig playerPosition={30} keyNumber={1} fog finalLevel />
                             <SetMapDimension width={20} height={20} addWallOnMap />

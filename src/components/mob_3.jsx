@@ -4,7 +4,7 @@ import { gameAppContext } from "./GameApp"
 import { useFrame } from "@react-three/fiber";
 import { MobLifeBar } from "./GameUI";
 import { ItemType1Model, EnemyBullet, Mob_1_model, ItemType2Model } from "./Game3DAssets";
-import { appContext } from "../src/App";
+import { appContext } from "../App";
 import { AudioManage } from "./audioComponents";
 import { CustomCounter } from "./utils";
 export let mobContext = createContext(null)
